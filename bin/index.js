@@ -19,10 +19,7 @@ console.log(msgBox); */
 const cli = require ('./cli');
 
 cli.run(process);
-
-exports.init = require('./commands/init');
-exports.merge = require('./commands/merge');
-
+exports.api = require('./api');
 // unsupported command
 /* 
 if (process.argv.length < 3) {

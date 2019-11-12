@@ -4,12 +4,9 @@
  */
 
 "use strict";
-const glob = require("glob");
 const espree = require("espree");
 const fs = require("fs");
 const path = require("path");
-const XmlReader = require("xml-reader");
-const babylon = require("babylon");
 
 function dirTree(filename) {
     var stats = fs.lstatSync(filename),

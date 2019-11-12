@@ -5,10 +5,8 @@
 
 "use strict";
 
-const {FileMerger} = require("./file-merger");
 const {CLI} = require("./cli");
 
 module.exports = {
-    FileMerger,
     CLI
 };

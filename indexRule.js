@@ -5,13 +5,8 @@
 
 "use strict";
 var espree = require("espree");
-var fs = require("fs");
-var path = require("path");
 var Traverser = require('eslint/lib/shared/traverser');
-var astUtils = require('eslint/lib/rules/utils/ast-utils');
 var ownUtils = require('./lib/utils/ast-utils');
-var events = require("events");
-var generate = require("babel-core").generator;
 
 var rules = require('./lib/rules/rules');
 const esquery = require("esquery");
