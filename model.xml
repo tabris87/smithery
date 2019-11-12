@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<featureModel>
+		<properties/>
+		<struct>
+			<and abstract="true" mandatory="true" name="TestProject">
+				<feature mandatory="true" name="Mandatory1"/>
+				<feature name="OptionalFeature1"/>
+				<feature name="OptionalFeature2"/>
+				<or abstract="true" name="OptionalGroup">
+					<feature mandatory="true" name="OptionalOr1"/>
+					<feature mandatory="true" name="OptionalOr2"/>
+				</or>
+				<alt abstract="true" mandatory="true" name="MandatoryGroup">
+					<feature mandatory="true" name="MandatoryAlt1"/>
+					<feature mandatory="true" name="MandatoryAlt2"/>
+					<feature mandatory="true" name="MandatoryAlt3"/>
+				</alt>
+			</and>
+		</struct>
+		<constraints/>
+		<calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
+		<comments/>
+		<featureOrder userDefined="false"/>
+	</featureModel>
