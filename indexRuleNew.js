@@ -25,7 +25,8 @@ var baseAST = Parser.parse({
     version: 5
 });
 
-let Merger = new MergerCL(Rules);
+//Just to limit the number of rules applied and ensure only js used for javascript/ECMA
+let Merger = new MergerCL(Rules.getRulesByLanguage('JS'));
 
 var temp = Merger.merge(baseAST, featureAst);
 
