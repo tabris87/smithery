@@ -27,7 +27,8 @@ var baseAST = Parser.parse({
 
 //Just to limit the number of rules applied and ensure only js used for javascript/ECMA
 let Merger = new MergerCL(Rules.getRulesByLanguage('JS'));
-
+baseAST.featureName = 'base';
+featureAst.featureName = 'feature';
 var temp = Merger.merge(baseAST, featureAst);
 
 var output = escodegen.generate(temp);
