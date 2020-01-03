@@ -10,5 +10,5 @@ oProject.build();
 let oProject2 = new ProjectCL();
 oProject2.setModelPath('./test.model');
 oProject2.setConfigsPath('./configs');
-oProject2.setConfig('fileConflict');
+oProject2.setConfig('varText');
 oProject2.build();

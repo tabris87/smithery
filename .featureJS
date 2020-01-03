@@ -1,0 +1,6 @@
+{
+    "model": "./test.model",
+    "configs": "./configs/",
+    "projectFiles": "./testProject",
+    "buildFolder": "build"
+}
