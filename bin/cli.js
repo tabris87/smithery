@@ -3,8 +3,7 @@ const fs = require('fs');
 const init = require('./commands/init');
 const merge = require('./commands/merge');
 
-
-const packageInfo = fs.readFileSync('./package.json', 'utf-8');
+const packageInfo = require('./package.json');
 
 const _setupOptions = function () {
     program
