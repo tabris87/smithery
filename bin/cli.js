@@ -2,8 +2,7 @@ const program = require('commander');
 const fs = require('fs');
 const init = require('./commands/init');
 const merge = require('./commands/merge');
-
-const packageInfo = require('./package.json');
+const packageInfo = require('../package.json');
 
 const _setupOptions = function () {
     program
