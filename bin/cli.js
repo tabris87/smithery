@@ -17,7 +17,7 @@ const _setupOptions = function () {
 
         // function to execute when command is used
         .action(function (args) {
-            init();
+            init(args);
         });
 
     program
