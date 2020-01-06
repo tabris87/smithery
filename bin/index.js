@@ -16,7 +16,7 @@ const msgBox = boxen(greeting, boxenOptions);
 console.log(msgBox); */
 //only needed for exact cmd environment
 
-const cli = require ('./cli');
+const cli = require('./cli');
 
 cli.run(process);
 exports.api = require('./api');

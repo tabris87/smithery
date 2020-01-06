@@ -6,8 +6,7 @@ const featureCode = "var text = ' WAT'; var test = function(){original(); consol
 const ParserCL = require('./lib/Parser');
 const RulesCL = require('./lib/Rules');
 const MergerCL = require('./lib/Merger');
-
-const escodegen = require("escodegen");
+const Generator = require('./lib/Generator');
 
 let Parser = new ParserCL();
 let Rules = new RulesCL();
@@ -31,5 +30,9 @@ baseAST.featureName = 'base';
 featureAst.featureName = 'feature';
 var temp = Merger.merge(baseAST, featureAst);
 
-var output = escodegen.generate(temp);
+let Generator = new GeneratorCL();
+var output = Generator.generate({
+    lang: 'JS',
+    codeAst: temp
+})
 console.log(output);

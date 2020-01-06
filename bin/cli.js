@@ -1,7 +1,5 @@
 const program = require('commander');
-const fs = require('fs');
-const init = require('./commands/init');
-const merge = require('./commands/merge');
+const command = require('./commands');
 const packageInfo = require('../package.json');
 
 const _setupOptions = function () {
@@ -15,17 +13,19 @@ const _setupOptions = function () {
 
         // function to execute when command is used
         .action(function (args) {
-            init(args);
+            command.init(args);
         });
 
     program
-        .command('merge <base> <feature>') // sub-command name
+        .command('merge <base> <feature> [output]') // sub-command name
         .alias('M')
         .description('Merge two files given (base and feature file), by the default rules') // command description
-
+        .on('--help', function () {
+            console.log('\n', 'Examples:\n', '\n', '$fjs merge ./base.js ./feature.js\n', '$fjs merge ./base.js ./feature.js ./output.js');
+        })
         // function to execute when command is used
-        .action(function (base, feature, args) {
-            merge(base, feature, args);
+        .action(function (base, feature, output) {
+            command.merge(base, feature, output);
         });
 }
 
