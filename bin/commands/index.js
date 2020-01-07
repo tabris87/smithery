@@ -2,5 +2,6 @@
 
 module.exports = {
     init: require('./init'),
-    merge: require('./merge')
+    merge: require('./merge'),
+    build: require('./build')
 }

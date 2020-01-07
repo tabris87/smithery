@@ -3,7 +3,7 @@ const path = require('path');
 const chalk = require("chalk");
 const inquirer = require("inquirer");
 
-module.exports = function () {
+function init() {
     const sWorkingDir = process.cwd();
 
     if (fs.existsSync(path.join(sWorkingDir, ".featureJS"))) {
@@ -59,4 +59,17 @@ module.exports = function () {
             fs.writeFileSync(path.join(sWorkingDir, '.featureJS'), sProjectConfig);
             process.exit(0);
         });
+}
+
+module.exports = {
+    createCommand: function (program) {
+        program.command('init') // sub-command name
+            .alias('I')
+            .description('Inititalize the project setup') // command description
+
+            // function to execute when command is used
+            .action(function () {
+                init();
+            });
+    }
 }

@@ -5,7 +5,7 @@ const RulesCL = require('../../lib/Rules');
 const MergerCL = require('../../lib/Merger');
 const GeneratorCL = require('../../lib/Generator');
 
-module.exports = function (base, feature, output) {
+function merge(base, feature, output) {
     debugger;
     const sWorkingDir = process.cwd();
     console.log('Merging files: ');
@@ -74,4 +74,19 @@ module.exports = function (base, feature, output) {
         console.log(result);
     }
     process.exit(0);
+}
+
+module.exports = {
+    createCommand: function (program) {
+        program.command('merge <base> <feature> [output]') // sub-command name
+            .alias('M')
+            .description('Merge two files given (base and feature file), by the default rules') // command description
+            .on('--help', function () {
+                console.log('\n', 'Examples:\n', '\n', '$fjs merge ./base.js ./feature.js\n', '$fjs merge ./base.js ./feature.js ./output.js');
+            })
+            // function to execute when command is used
+            .action(function (base, feature, output) {
+                merge(base, feature, output);
+            });
+    }
 }
