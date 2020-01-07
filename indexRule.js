@@ -58,8 +58,6 @@ function run() {
         aFunctionsToInsert = [...aFunctionsToInsert, ...esquery.match(test2,astSelector)];
     });
 
-    debugger;
-
     function matchesFunctionToInsert(sPath) {
         return aFunctionsToInsert.filter((node) => {return node.completePath === sPath});
     }

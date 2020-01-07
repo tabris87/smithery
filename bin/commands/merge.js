@@ -6,7 +6,6 @@ const MergerCL = require('../../lib/Merger');
 const GeneratorCL = require('../../lib/Generator');
 
 function merge(base, feature, output) {
-    debugger;
     const sWorkingDir = process.cwd();
     console.log('Merging files: ');
     console.log('base file: ', base);

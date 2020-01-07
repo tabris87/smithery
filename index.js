@@ -30,7 +30,6 @@ function dirTree(filename) {
 };
 
 function createASTCombination(originFile, featureFile) {
-    debugger;
     var fileContent = fs.readFileSync(originFile.path, 'utf-8');
     var originAst = espree.parse(fileContent, {
         //attach range information to each node
@@ -49,12 +48,10 @@ function createASTCombination(originFile, featureFile) {
 
     //originAst = babylon.parse(fileContent, {});
     //fs.writeFileSync('babylonAstComponent.json', JSON.stringify(originAst));
-    debugger;
     return originFile;
 };
 
 function mergeIntoFinal(aFinalStructure, aItemsToMerge) {
-    //debugger;
     for (var i = 0; i < aItemsToMerge.length; i++) {
         var iIndex = aFinalStructure.findIndex(file => file.type === aItemsToMerge[i].type && file.name === aItemsToMerge[i].name);
         //If file not at final structure copy into final structure
