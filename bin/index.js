@@ -23,11 +23,11 @@ console.log(JSON.stringify(process.execArgv));
 const path = require('path');
 const fs = require('fs');
 
-console.log(path.join(process.argv[1].replace('index.js'), '../../../js2flowchart'));
-var bExists = fs.existsSync(path.join(process.argv[1].replace('index.js'), '../../../js2flowchart'));
+console.log(path.join(process.argv[1].replace('index.js'), '../../../eslint'));
+var bExists = fs.existsSync(path.join(process.argv[1].replace('index.js'), '../../../eslint'));
 console.log('Exists: ' + bExists);
 if (bExists) {
-    const oModule = require(path.join(process.argv[1].replace('index.js'), '../../../js2flowchart'));
+    const oModule = require(path.join(process.argv[1].replace('index.js'), '../../../eslint'));
     console.log(Object.keys(oModule));
 }
 
