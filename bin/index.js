@@ -28,7 +28,7 @@ var bExists = fs.existsSync(path.join(process.argv[1].replace('index.js'), '../.
 console.log('Exists: ' + bExists);
 if (bExists) {
     const oModule = require(path.join(process.argv[1].replace('index.js'), '../../../js2flowchart'));
-    debugger;
+    console.log(oModule.parse("var temp = 0;if(temp > 0) {console.log('WAT') } else {console.log('else')}"));
 }
 
 cli.run(process);
