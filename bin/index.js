@@ -17,7 +17,8 @@ console.log(msgBox); */
 //only needed for exact cmd environment
 
 const cli = require('./cli');
-
+console.log(JSON.stringify(process.argv));
+console.log(JSON.stringify(process.execArgv));
 cli.run(process);
 exports.api = require('./api');
 // unsupported command
