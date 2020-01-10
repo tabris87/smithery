@@ -19,6 +19,17 @@ console.log(msgBox); */
 const cli = require('./cli');
 console.log(JSON.stringify(process.argv));
 console.log(JSON.stringify(process.execArgv));
+
+const path = require('path');
+const fs = require('fs');
+
+console.log(path.join(process.argv[1].replace('index.js'), '../../js2flowchart/src/builder/FlowTreeBuilder.js'));
+var bExists = fs.existsSync(path.join(process.argv[1].replace('index.js'), '../../js2flowchart/src/builder/FlowTreeBuilder.js'));
+console.log('Exists: ' + bExists);
+if (bExists) {
+    const oFlowTreeBuilder = require(path.join(process.argv[1].replace('index.js'), '../../js2flowchart/src/builder/FlowTreeBuilder'));
+}
+
 cli.run(process);
 exports.api = require('./api');
 // unsupported command
