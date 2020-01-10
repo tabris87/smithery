@@ -7,7 +7,7 @@
     "bin": {
         "fjs": "./bin/index.js"
     },
-    "main": "./bin/index.js",
+    "main": "./bin/api.js",
     "dependencies": {
         "commander": "^4.0.1",
         "escodegen": "^1.12.0",

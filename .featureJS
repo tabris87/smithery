@@ -4,6 +4,6 @@
     "projectFiles": "./testProject",
     "buildFolder": "build",
     "plugins": [
-        "plugin-featureJS-XML"
+        "featureJS-plugin-JSON"
     ]
 }
