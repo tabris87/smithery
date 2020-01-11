@@ -4,10 +4,13 @@
     "author": "Adrian Marten",
     "license": "MIT",
     "description": "FOP Toolkit for JavaScript",
+    "scripts": {
+        "testInstall": "git add -u && git commit -m 'Testinstall commit' && git push && npm install -g git+https://github.com/tabris87/featureJS.git#master"
+    },
     "bin": {
         "fjs": "./bin/index.js"
     },
-    "main": "./bin/api.js",
+    "main": "./bin/index.js",
     "dependencies": {
         "commander": "^4.0.1",
         "escodegen": "^1.12.0",
