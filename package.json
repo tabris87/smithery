@@ -13,6 +13,7 @@
     "main": "./bin/index.js",
     "dependencies": {
         "commander": "^4.0.1",
+        "css-what": "^3.2.1",
         "escodegen": "^1.12.0",
         "eslint": "^6.5.1",
         "espree": "^6.0.0",
