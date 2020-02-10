@@ -1,0 +1,6 @@
+{
+	"model":"./model.model",
+	"configs":"configurations",
+	"projectFiles":"src",
+	"buildFolder":"build"
+}
