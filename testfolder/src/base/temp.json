@@ -1,3 +1,11 @@
 {
-    "simple": "text"
+    "simple": "text",
+    "anArray": ["1", "2", "3"],
+    "anProblemArray": [
+        ["1"],
+        ["2"]
+    ],
+    "aSecondArray": [{
+        "key": "blub"
+    }]
 }
