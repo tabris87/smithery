@@ -1,0 +1,139 @@
+{
+    "type": "featureModel",
+    "properties": [{
+        "chosenLayoutAlgorithm": "1"
+    }],
+    "children": [{
+        "type": "struct",
+        "properties": [],
+        "children": [{
+                "type": "and",
+                "properties": [{
+                    "mandatory": "true",
+                    "name": "Eclipse"
+                }],
+                "children": [{
+                    "type": "feature",
+                    "properties": [{
+                        "name": "JDT"
+                    }]
+                }, {
+                    "type": "feature",
+                    "properties": [{
+                        "name": "CDT"
+                    }]
+                }, {
+                    "type": "feature",
+                    "properties": [{
+                        "name": "AJDT"
+                    }]
+                }, {
+                    "type": "feature",
+                    "properties": [{
+                        "name": "DeltaJEclipsePlugin"
+                    }]
+                }, {
+                    "type": "and",
+                    "properties": [{
+                        "name": "FeatureModeling"
+                    }],
+                    "children": [{
+                            "type": "feature",
+                            "properties": [{
+                                "name": "CIDE"
+                            }]
+                        },
+                        {
+                            "type": "feature",
+                            "properties": [{
+                                "name": "FAMILIAR"
+                            }]
+                        },
+                        {
+                            "type": "feature",
+                            "properties": [{
+                                "name": "ExtendedFM"
+                            }]
+                        },
+                        {
+                            "type": "feature",
+                            "properties": [{
+                                "name": "MoSoPoLiTe"
+                            }]
+                        },
+                        {
+                            "type": "or",
+                            "properties": [{
+                                "name": "FeatureIDE"
+                            }],
+                            "children": [{
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "AHEAD",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "FeatureHouse",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "FeatureCpp",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "DeltaJ",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "AspectJ",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "Munge",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "Antenna",
+                                        "mandatory": "true"
+                                    }]
+                                },
+                                {
+                                    "type": "feature",
+                                    "properties": [{
+                                        "name": "DeltaMontiArc",
+                                        "mandatory": "true"
+                                    }]
+                                }
+                            ]
+                        }
+                    ]
+                }]
+            },
+            {
+                "type": "constraints",
+                "properties": [],
+                "children": [{
+                    "type": "rule"
+                }]
+            }
+        ]
+    }]
+}

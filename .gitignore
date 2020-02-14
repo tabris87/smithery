@@ -63,3 +63,5 @@ jsdocs/
 Paper/
 FeatureHouse/
 assets/
+
+package-lock.json
