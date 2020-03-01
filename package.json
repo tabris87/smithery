@@ -1,6 +1,6 @@
 {
     "name": "featureJS",
-    "version": "0.1.9",
+    "version": "0.1.10",
     "author": "Adrian Marten",
     "license": "MIT",
     "description": "FOP Toolkit for JavaScript",
@@ -10,7 +10,7 @@
     "bin": {
         "fjs": "./bin/index.js"
     },
-    "main": "./bin/index.js",
+    "main": "./bin/api.js",
     "dependencies": {
         "commander": "^4.0.1",
         "css-what": "^3.2.1",
