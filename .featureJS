@@ -1,9 +1,0 @@
-{
-    "model": "./test.model",
-    "configs": "./configs/",
-    "projectFiles": "./testProject",
-    "buildFolder": "build",
-    "plugins": [
-        "featureJS-plugin-JSON"
-    ]
-}

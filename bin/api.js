@@ -5,8 +5,6 @@
 
 "use strict";
 
-const {CLI} = require("./cli");
-
 module.exports = {
-    CLI
+    Project: require('../lib/Project');
 };
