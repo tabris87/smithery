@@ -1,6 +1,6 @@
 {
-    "name": "featureJS",
-    "version": "0.1.10",
+    "name": "featureCLI",
+    "version": "0.1.11",
     "author": "Adrian Marten",
     "license": "MIT",
     "description": "FOP Toolkit for JavaScript",
@@ -8,21 +8,13 @@
         "testInstall": "git add -u && git commit -m 'Testinstall commit' && git push && npm install -g git+https://github.com/tabris87/featureJS.git#master"
     },
     "bin": {
-        "fjs": "./bin/index.js"
+        "fc": "./bin/index.js"
     },
     "main": "./bin/api.js",
     "dependencies": {
         "commander": "^4.0.1",
         "css-what": "^3.2.1",
-        "escodegen": "^1.12.0",
-        "eslint": "^6.5.1",
-        "espree": "^6.0.0",
-        "esquery": "^1.0.1",
         "featurecli-commons": "git+https://github.com/tabris87/featureCLI-commons.git#master",
-        "inquirer": "^7.0.2",
-        "xml2js": "^0.4.23"
-    },
-    "devDependencies": {
-        "js2flowchart": "^1.3.2"
+        "inquirer": "^7.0.2"
     }
 }
