@@ -1,6 +1,6 @@
 {
     "name": "featureCLI",
-    "version": "0.1.14",
+    "version": "0.1.15",
     "author": "Adrian Marten",
     "license": "MIT",
     "description": "FOP Toolkit for JavaScript",
