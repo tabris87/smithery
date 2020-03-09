@@ -1,6 +1,6 @@
 {
     "name": "featureCLI",
-    "version": "0.1.23",
+    "version": "0.1.24",
     "author": "Adrian Marten",
     "license": "MIT",
     "description": "FOP Toolkit for JavaScript",
@@ -12,6 +12,7 @@
     },
     "main": "./bin/api.js",
     "dependencies": {
+        "colors": "^1.4.0",
         "commander": "^4.0.1",
         "css-what": "^3.2.1",
         "featurecli-commons": "git+https://github.com/tabris87/featureCLI-commons.git#master",
