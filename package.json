@@ -1,16 +1,16 @@
 {
-    "name": "feature-cli",
+    "name": "smithery",
     "version": "0.2.0",
     "author": "Adrian Marten",
     "repository": {
         "type": "git",
-        "url": "https://github.com/tabris87/featureCLI.git"
+        "url": "https://github.com/tabris87/smithery.git"
     },
     "license": "Apache-2.0",
-    "description": "CLI Framework for Software Product Lines (SPL), by implementing the Feature Oriented Programming (FOP) Paradigm, for multiple Languages",
+    "description": "The house of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
     "scripts": {},
     "bin": {
-        "fcli": "./bin/index.js"
+        "smith": "./bin/index.js"
     },
     "main": "./bin/api.js",
     "dependencies": {
@@ -20,4 +20,4 @@
         "featurecli-commons": "git+https://github.com/tabris87/featureCLI-commons.git#master",
         "inquirer": "^7.0.2"
     }
-}
+}s
