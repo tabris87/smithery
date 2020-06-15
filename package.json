@@ -1,14 +1,16 @@
 {
-    "name": "featureCLI",
-    "version": "0.1.32",
+    "name": "feature-cli",
+    "version": "0.2.0",
     "author": "Adrian Marten",
-    "license": "MIT",
-    "description": "FOP Toolkit for JavaScript",
-    "scripts": {
-        "testInstall": "git add -u && git commit -m 'Testinstall commit' && git push && npm install -g git+https://github.com/tabris87/featureJS.git#master"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tabris87/featureCLI.git"
     },
+    "license": "Apache-2.0",
+    "description": "CLI Framework for Software Product Lines (SPL), by implementing the Feature Oriented Programming (FOP) Paradigm, for multiple Languages",
+    "scripts": {},
     "bin": {
-        "fpc": "./bin/index.js"
+        "fcli": "./bin/index.js"
     },
     "main": "./bin/api.js",
     "dependencies": {
