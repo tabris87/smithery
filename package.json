@@ -7,7 +7,7 @@
         "url": "https://github.com/tabris87/smithery.git"
     },
     "license": "Apache-2.0",
-    "description": "The house of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
+    "description": "The \"house\" of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
     "scripts": {},
     "bin": {
         "smith": "./bin/index.js"
@@ -17,7 +17,7 @@
         "colors": "^1.4.0",
         "commander": "^4.0.1",
         "css-what": "^3.2.1",
-        "featurecli-commons": "git+https://github.com/tabris87/featureCLI-commons.git#master",
-        "inquirer": "^7.0.2"
+        "inquirer": "^7.0.2",
+        "smithery-equipment": "^0.1.0"
     }
-}s
+}
