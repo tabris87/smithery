@@ -1,6 +1,6 @@
 {
     "name": "smithery",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "author": "Adrian Marten",
     "repository": {
         "type": "git",
@@ -18,6 +18,6 @@
         "commander": "^4.0.1",
         "css-what": "^3.2.1",
         "inquirer": "^7.0.2",
-        "smithery-equipment": "^0.1.0"
+        "smithery-equipment": "^0.1.1"
     }
 }
