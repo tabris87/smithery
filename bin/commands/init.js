@@ -6,47 +6,49 @@ const inquirer = require("inquirer");
 function init() {
     const sWorkingDir = process.cwd();
 
-    if (fs.existsSync(path.join(sWorkingDir, ".featureJS"))) {
-        console.log(chalk.yellow.bold("There exists already a featureJS project file!"));
+    if (fs.existsSync(path.join(sWorkingDir, ".smithery"))) {
+        console.log(chalk.yellow.bold("There exists already a smithery project file!"));
         process.exit(1);
     }
 
     const questions = [{
-            type: 'input',
-            name: 'model',
-            message: 'Where should the model stored?',
-            default: './model.model'
-        },
-        {
-            type: 'input',
-            name: 'configs',
-            message: 'Where should the configurations stored?',
-            default: 'configurations',
-        },
-        {
-            type: 'input',
-            name: 'projectFiles',
-            message: 'Where should the project files stored?',
-            validate: function (input) {
-                if (input === "") {
-                    return "You have to enter a valid path!";
-                } else {
-                    return true;
-                }
-            }
-        },
-        {
-            type: 'input',
-            name: 'buildFolder',
-            message: 'Where should the build placed?',
-            validate: function (input) {
-                if (input === "") {
-                    return "You have to enter a valid path!";
-                } else {
-                    return true;
-                }
+        type: 'input',
+        name: 'model',
+        message: 'Where should the model stored?',
+        default: './model.xml'
+    },
+    {
+        type: 'input',
+        name: 'configs',
+        message: 'Where should the configurations stored?',
+        default: 'configurations',
+    },
+    {
+        type: 'input',
+        name: 'projectFiles',
+        message: 'Where should the project files stored?',
+        default: 'features',
+        validate: function (input) {
+            if (input === "") {
+                return "You have to enter a valid path!";
+            } else {
+                return true;
             }
         }
+    },
+    {
+        type: 'input',
+        name: 'buildFolder',
+        message: 'Where should the build placed?',
+        default: 'build',
+        validate: function (input) {
+            if (input === "") {
+                return "You have to enter a valid path!";
+            } else {
+                return true;
+            }
+        }
+    }
     ];
 
     inquirer
@@ -56,7 +58,7 @@ function init() {
             sProjectConfig = sProjectConfig.replace(/,/g, ',\n\t');
             sProjectConfig = sProjectConfig.replace(/\{/, '{\n\t');
             sProjectConfig = sProjectConfig.replace(/\}/, '\n}');
-            fs.writeFileSync(path.join(sWorkingDir, '.featureJS'), sProjectConfig);
+            fs.writeFileSync(path.join(sWorkingDir, '.smithery'), sProjectConfig);
             process.exit(0);
         });
 }
