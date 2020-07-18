@@ -57,14 +57,6 @@ const {
 } = require('smithery');
 ```
 
-## Documentation
-*<span style="color: yellow;">Under Construction</span>
-
-The smithery framework is designed as a plugin framework to provide enough flexibility to work within different projects and with lot of different languages;
-Therefore we can describe only the core parts of this framework at the documentation.
-
-To get a better understanding have look [(O.O)](docs/Documentation.md).
-
 ## Contribution
  [*Missing*](https://github.com/tabris87/featureCLI/blob/master/docs/CONTRIBUTING.md)
 
