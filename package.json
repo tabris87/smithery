@@ -8,7 +8,16 @@
     },
     "license": "Apache-2.0",
     "description": "The \"house\" of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
-    "scripts": {},
+    "scripts": {
+        "test": "npx jest --config jest.config.js",
+        "lint": "npx eslint .",
+        "format": "npx eslint --fix .",
+        "prepare": "exit 0",
+        "prepublishOnly": "exit 0",
+        "preversion": "exit 0",
+        "version": "echo 'npm run format && git add -A src'",
+        "postversion": "echo 'git push && git push --tags'"
+    },
     "bin": {
         "smith": "./bin/index.js"
     },
@@ -18,6 +27,11 @@
         "commander": "^4.0.1",
         "css-what": "^3.2.1",
         "inquirer": "^7.0.2",
-        "smithery-equipment": "^0.1.1"
+        "smithery-equipment": "^0.1.6"
+    },
+    "devDependencies": {
+        "eslint": "^7.7.0",
+        "jest": "^26.4.2",
+        "jest-html-reporters": "^2.0.3"
     }
 }

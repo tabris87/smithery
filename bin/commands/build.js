@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const ProjectCL = require('../../lib/Project');
 
 function build(configName) {
@@ -17,10 +17,10 @@ module.exports = {
             .alias('B')
             .description('Starts the build of your product by the given configuration, otherwise tries to use the default config')
             .on('--help', function () {
-                console.log('\n', 'Examples:\n', '\n', '$fjs build config1\n', '$fjs build config1')
+                console.log('\n', 'Examples:\n', '\n', '$fjs build config1\n', '$fjs build config1');
             })
             .action(function (configName) {
                 build(configName);
             });
     }
-}
+};

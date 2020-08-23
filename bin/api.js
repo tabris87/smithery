@@ -3,7 +3,7 @@
  * @author Adrian Marten
  */
 
-"use strict";
+'use strict';
 
 module.exports = {
     Project: require('../lib/Project'),
