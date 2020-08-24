@@ -22,6 +22,7 @@ module.exports = {
         "html",
         "json"
     ],
+    modulePaths: ["<rootDir>/tests/json-reporter.js"],
     reporters: [
         "default",
         [
@@ -30,8 +31,14 @@ module.exports = {
                 filename: "./tests/reports/latestTest.html",
                 expand: false,
                 pageTitle: "smithery",
-                hideIcon:true
+                hideIcon: true
             }
-        ]
+        ]/* Maybe later,
+        [
+            "<rootDir>/tests/json-reporter.js",
+            {
+                filename: "./tests/reports/latestTest.json"
+            }
+        ] */
     ]
 }
