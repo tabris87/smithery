@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const chalk = require("chalk");
-const inquirer = require("inquirer");
+const chalk = require('chalk');
+const inquirer = require('inquirer');
 
 function init() {
     const sWorkingDir = process.cwd();
@@ -74,4 +74,4 @@ module.exports = {
                 init();
             });
     }
-}
+};

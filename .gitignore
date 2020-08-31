@@ -65,3 +65,5 @@ FeatureHouse/
 assets/
 
 package-lock.json
+tests/reports/
+docs/
