@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "pretty": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "strict": true,
+  },
+  "include": [
+    "lib",
+    "bin"
+  ],
+  "exclude": [
+    "node_modules",
+    "tests"
+  ]
+}
