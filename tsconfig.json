@@ -8,10 +8,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "strict": true,
+    "resolveJsonModule": true
   },
   "include": [
-    "lib",
-    "bin"
+    "src"
   ],
   "exclude": [
     "node_modules",

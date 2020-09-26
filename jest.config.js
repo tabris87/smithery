@@ -22,7 +22,6 @@ module.exports = {
         "html",
         "json"
     ],
-    modulePaths: ["<rootDir>/tests/json-reporter.js"],
     reporters: [
         "default",
         [
