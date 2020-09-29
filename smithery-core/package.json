@@ -1,0 +1,40 @@
+{
+  "name": "smithery",
+  "version": "0.1.0",
+  "description": "The \"house\" of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
+  "author": "Adrian Marten",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tabris87/smithery.git"
+  },
+  "scripts": {
+    "test": "npx mocha -r ts-node/register src/**/*.spec.ts --diff --reporter spec --reporter mochawesome --reporter-options reportDir=reports/test-results,reportFilename=testResults",
+    "coverage": "npx nyc npm run test",
+    "lint": "npx eslint . --ext .ts",
+    "lint-report": "npx eslint . --ext .ts -f node_modules/eslint-detailed-reporter/lib/detailed.js -o reports/lintingReport.html",
+    "format": "npx prettier --write \"src/**/*.ts\"",
+    "build": "npx tsc"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "dependencies": {
+    "css-what": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.12",
+    "@types/mocha": "^8.0.3",
+    "@types/node": "^14.11.2",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "chai": "^4.2.0",
+    "eslint": "^7.10.0",
+    "eslint-detailed-reporter": "^0.8.0",
+    "mocha": "^8.1.3",
+    "mochawesome": "^6.1.1",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  }
+}
