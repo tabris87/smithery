@@ -1,15 +1,13 @@
-import { Generator } from '../interfaces';
+import { IGenerator, Node } from '../Interfaces';
 /**
  * Implementation of the Generator interface to generate files and directories
  */
-export declare class DirectoryGenerator implements Generator {
+export declare class DirectoryGenerator implements IGenerator {
     /**
      * @override
      */
-    generate(oAST: {
-        [key: string]: any;
-    }, options?: {
-        [key: string]: any;
+    generate(oAST: Node, options?: {
+        filePath: string;
     }): string;
     /**
      * Recursive file and folder generation

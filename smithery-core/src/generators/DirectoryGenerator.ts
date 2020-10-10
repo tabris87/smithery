@@ -1,4 +1,5 @@
-import { IGenerator, Node } from '../Interfaces';
+import { IGenerator} from '../Interfaces';
+import { Node } from '../utils/Node';
 import { FileType } from '../enums';
 
 import { mkdirSync, writeFileSync } from 'fs';

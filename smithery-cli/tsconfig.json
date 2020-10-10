@@ -6,15 +6,16 @@
     "moduleResolution": "Node",
     "pretty": true,
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "./bin",
     "strict": true,
     "resolveJsonModule": true
   },
   "include": [
-    "src"
+    "src/**/*.ts",
+    "!src/**/*.spec.ts"
   ],
   "exclude": [
     "node_modules",
-    "tests"
+    "**/*.spec.ts"
   ]
 }

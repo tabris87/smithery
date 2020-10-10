@@ -7,7 +7,7 @@ const RuleSet_1 = require("./RuleSet");
 const Generator_1 = require("./Generator");
 const Parser_1 = require("./Parser");
 const Imposer_1 = require("./Imposer");
-const interfaces_1 = require("./interfaces");
+const Interfaces_1 = require("./Interfaces");
 class Project {
     constructor(options) {
         var _a;
@@ -113,7 +113,7 @@ class Project {
         // take the project file path from the options or from the readed config;
         this._projectAST =
             ((_a = this._parserFactory
-                .getParser('DIR')) === null || _a === void 0 ? void 0 : _a.parse(path_1.join(this._workingDir, options.projectFiles || config.projectFiles))) || new interfaces_1.Node();
+                .getParser('DIR')) === null || _a === void 0 ? void 0 : _a.parse(path_1.join(this._workingDir, options.projectFiles || config.projectFiles))) || new Interfaces_1.Node();
     }
     build(configName) {
         var _a, _b, _c, _d, _e, _f;
@@ -177,31 +177,14 @@ class Project {
         console.log('Build done. -> Have fun.');
     }
     setConfig(configName) {
-        if (typeof configName === 'object') {
-            if (typeof configName.config !== 'undefined') {
-                this._config = configName.config;
-            }
-            else {
-                if (this._configs === null) {
-                    throw new Error('No configs given');
-                }
-                const localConfig = this._configs.filter((config) => config.name === configName.name);
-                if (localConfig.length === 0) {
-                    throw new Error('Config for ' + configName.name + ' does not exist withing configs');
-                }
-                this._config = localConfig[0];
-            }
+        if (this._configs === null) {
+            throw new Error('No configs given');
         }
-        else {
-            if (this._configs === null) {
-                throw new Error('No configs given');
-            }
-            const oConfig = this._configs.filter((config) => config.name === configName);
-            if (oConfig.length === 0) {
-                throw new Error('Config for ' + configName + ' does not exist withing configs');
-            }
-            this._config = oConfig[0];
+        const oConfig = this._configs.filter((config) => config.name === configName);
+        if (oConfig.length === 0) {
+            throw new Error('Config for ' + configName + ' does not exist withing configs');
         }
+        this._config = oConfig[0];
     }
     _getConfigFiles(dirPath) {
         if (fs_1.existsSync(dirPath)) {
@@ -232,40 +215,44 @@ class Project {
             module = this._loadGlobally(plugin.name);
         }
         if (module !== undefined) {
-            if (module.parser !== undefined) {
-                if (module.parser.fileEnding && module.parser.parser) {
-                    if (plugin.config && plugin.config.parser) {
-                        Object.keys(plugin.config.parser).forEach((key) => {
-                            const setter = `set${this._capitalize(key)}`;
-                            if (module !== undefined && typeof module.parser.parser[setter] !== 'undefined') {
-                                this._invokeFunktion(module.parser.parser, setter, plugin.config.parser[key]);
+            if (module.parser.fileEnding && module.parser.parser) {
+                if (plugin.config && plugin.config.parser) {
+                    Object.keys(plugin.config.parser).forEach((key) => {
+                        var _a, _b;
+                        const setter = `set${this._capitalize(key)}`;
+                        if (module !== undefined && typeof module.parser.parser[setter] !== 'undefined') {
+                            if ((_a = plugin.config) === null || _a === void 0 ? void 0 : _a.parser) {
+                                this._invokeFunktion(module.parser.parser, setter, (_b = plugin.config) === null || _b === void 0 ? void 0 : _b.parser[key]);
                             }
-                            else {
-                                // Log.warn(`\nNo suitable setter for configuration ${sKey} found. Will be ignored!!`)
-                                // tslint:disable-next-line: no-console
-                                console.log(`\nNo suitable setter for configuration ${key} found. Will be ignored!!`);
-                            }
-                        });
-                    }
-                    if (Array.isArray(module.parser.fileEnding)) {
-                        module.parser.fileEnding.forEach((sEnding) => {
-                            if (module !== undefined) {
-                                this._parserFactory.addParser(module.parser.parser, sEnding);
-                            }
-                        });
-                    }
-                    else {
-                        this._parserFactory.addParser(module.parser.parser, module.parser.fileEnding);
-                    }
+                        }
+                        else {
+                            // Log.warn(`\nNo suitable setter for configuration ${sKey} found. Will be ignored!!`)
+                            // tslint:disable-next-line: no-console
+                            console.log(`\nNo suitable setter for configuration ${key} found. Will be ignored!!`);
+                        }
+                    });
+                }
+                if (Array.isArray(module.parser.fileEnding)) {
+                    module.parser.fileEnding.forEach((sEnding) => {
+                        if (module !== undefined) {
+                            this._parserFactory.addParser(module.parser.parser, sEnding);
+                        }
+                    });
+                }
+                else {
+                    this._parserFactory.addParser(module.parser.parser, module.parser.fileEnding);
                 }
             }
             if (module.generator !== undefined) {
                 if (module.generator.fileEnding !== undefined && module.generator.generator !== undefined) {
                     if (plugin.config && plugin.config.generator) {
                         Object.keys(plugin.config.generator).forEach((sKey) => {
+                            var _a;
                             const setter = `set${this._capitalize(sKey)}`;
                             if (typeof (module === null || module === void 0 ? void 0 : module.generator.generator[setter]) !== 'undefined') {
-                                this._invokeFunktion(module.generator.generator, setter, plugin.config.generator[sKey]);
+                                if ((_a = plugin.config) === null || _a === void 0 ? void 0 : _a.generator) {
+                                    this._invokeFunktion(module.generator.generator, setter, plugin.config.generator[sKey]);
+                                }
                             }
                             else {
                                 // Log.warn(`\nNo suitable setter for configuration ${sKey} found. Will be ignored!!`)
@@ -313,8 +300,8 @@ class Project {
     }
     _loadProjectRules(rulePath) {
         if (fs_1.lstatSync(rulePath).isDirectory()) {
-            let rules = fs_1.readdirSync(rulePath);
-            rules = rules
+            const rules = fs_1.readdirSync(rulePath);
+            const loadedRules = rules
                 .map((sRulePath) => {
                 try {
                     return require(path_1.join(rulePath, sRulePath));
@@ -326,7 +313,7 @@ class Project {
                 .filter((oRule) => {
                 return oRule;
             });
-            return rules;
+            return loadedRules;
         }
         else {
             try {
@@ -356,6 +343,7 @@ class Project {
     _capitalize(value) {
         return value.charAt(0).toUpperCase() + value.slice(1);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     _invokeFunktion(object, fktName, argumentMap) {
         if (Array.isArray(argumentMap)) {
             object[fktName](...argumentMap);

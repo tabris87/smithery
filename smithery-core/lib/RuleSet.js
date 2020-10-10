@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RuleSet = exports.Rule = void 0;
+exports.RuleSet = void 0;
 const cssWhat = require("css-what");
 const rules_1 = require("./rules");
 class Rule {
@@ -21,7 +21,7 @@ class Rule {
         this._featureChecks = this._setupSelector(this._selectorFeature);
     }
     supportsLanguage(lang) {
-        return true;
+        return this._targetNodes.find((tar) => tar.toLowerCase() === lang.toLowerCase()) !== undefined;
     }
     isMatching(baseFST, featureFST) {
         // check if the path contains the correct form for the css selector
@@ -40,10 +40,71 @@ class Rule {
         return cssList.map((cssPart) => this._createSelectorChecks(cssPart));
     }
     _createSelectorChecks(cssPart) {
+        // #region selectorBuildExplanation
+        // Test mit mehreren sollte zu Regex führen
+        // File[ending]>Whatever Test,
+        // File[ending=JS]>Whatever Test,
+        // Resultat: File\.Whatever\.[\w.]*Text
+        /*
+         * Array(6):
+            0: {type: "tag", name: "file"}
+            1: {type: "attribute", name: "ending", action: "exists", value: "", ignoreCase: false},
+               {type: "attribute", name: "ending", action: "equals", value: "JS", ignoreCase: false}
+            2: {type: "child"}
+            3: {type: "tag", name: "whatever"}
+            4: {type: "descendant"}
+            5: {type: "tag", name: "test"}
+         */
+        /*
+        var temp = cssList.map((oToken) => {
+            if (oToken.type === "tag") {
+                return oToken.name;
+            }
+            if (oToken.type === "child") {
+                return "\\.";
+            }
+            if (oToken.type === "descendant") {
+                return "\\.[\\w.]*"
+            }
+        }).filter(oPart => oPart);
+        //the last tag has to be at the end of the string.
+        temp[temp.length - 1] = "(" + temp[temp.length - 1] + ")$"
+        var pathRegExp = new RegExp(temp.join(''));
+        var level = 0;
+        var checks = {};
+        cssList.map((oToken) => {
+            if (oToken.type === "tag") {
+                level++;
+            }
+            oToken.level = level;
+            return oToken;
+        }).forEach((oToken) => {
+            if (oToken.type === "tag") {
+                checks[oToken.level] = oToken;
+            }
+            if (oToken.type === "attribute") {
+                var attributes = checks[oToken.level]['attributes'];
+                if (!attributes) {
+                    attributes = [];
+                }
+                attributes.push(oToken);
+                checks[oToken.level]['attributes'] = attributes;
+            }
+        });
+        Object.keys(checks).forEach((sKey) => {
+            if (!checks[sKey].attributes) {
+                delete checks[sKey]
+            }
+        });
+        return {
+            pathRegex: pathRegExp,
+            propertyChecks: checks
+        }*/
+        //#endregion
         const temp = cssPart
             .map((token) => {
             if (token.type === 'tag') {
-                return token.normalize;
+                return token.name;
             }
             if (token.type === 'child') {
                 return '\\.';
@@ -62,8 +123,8 @@ class Rule {
             if (token.type === 'tag') {
                 level++;
             }
-            token.level = level;
-            return token;
+            const refactoredToken = Object.assign(Object.assign({}, token), { level: level });
+            return refactoredToken;
         })
             .forEach((token) => {
             if (token.type === 'tag') {
@@ -79,15 +140,15 @@ class Rule {
             }
         });
         Object.keys(checks).forEach((key) => {
-            if (!checks[key].attributes) {
-                delete checks[key];
+            if (!checks[parseInt(key, 10)].attributes) {
+                delete checks[parseInt(key, 10)];
             }
         });
         return {
             pathRegex: pathRegExp,
             propertyChecks: checks,
             attributes: [],
-            name: '',
+            name: ''
         };
     }
     _checkNodeMatching(node, checks) {
@@ -103,21 +164,28 @@ class Rule {
                 for (const index of checkKeys) {
                     /* 0: {type: "tag", name: "file"}
                        1: {type: "attribute", name: "ending", action: "exists", value: "", ignoreCase: false} */
-                    const checkProp = check.propertyChecks[index];
+                    const checkProp = check.propertyChecks[parseInt(index, 10)];
                     // iterate upwards until we found the correct one or the root node
                     while (latestNode.type !== check.name && latestNode.parent) {
                         if (latestNode.parent) {
                             latestNode = latestNode.parent;
                         }
                     }
-                    for (const attCheck of checkProp.attributtes) {
+                    //Just to ensure they are not undefined ... (Hello TypeScript -_-)
+                    if (typeof checkProp.attributes === 'undefined') {
+                        checkProp.attributes = [];
+                    }
+                    for (const attributeCheck of checkProp.attributes) {
+                        const attCheck = attributeCheck;
+                        if (!attCheck.name) {
+                            continue;
+                        }
                         const attName = attCheck.name;
                         if (attCheck.action === 'exists' && typeof latestNode.getAttribute(attName) === 'undefined') {
                             return false;
                         }
                         if (attCheck.action === 'equals' &&
-                            !(typeof latestNode.getAttribute(attName) !== 'undefined' &&
-                                this._attributeFits(latestNode.getAttribute(attName), attCheck.value))) {
+                            !(typeof latestNode.getAttribute(attName) !== 'undefined' && this._attributeFits(latestNode.getAttribute(attName), attCheck.value))) {
                             return false;
                         }
                     }
@@ -156,7 +224,6 @@ class Rule {
         }
     }
 }
-exports.Rule = Rule;
 class RuleSet {
     constructor(rules) {
         this._languageLimit = '';

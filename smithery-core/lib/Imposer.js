@@ -7,9 +7,6 @@ class Imposer {
         this.generatorFactory = generator;
         this.ruleSet = rules;
     }
-    static sortByType(value1, value2) {
-        return value1.type.localCompare(value2.type);
-    }
     impose(baseFST, featureFST, visitorKeys) {
         const match = this.ruleSet.getMatchingRule(baseFST, featureFST);
         if (match) {
@@ -38,14 +35,14 @@ class Imposer {
         const childKeys = visitorKeys[baseFST.type];
         // check all childs and include all childs
         childKeys.forEach((childKey) => {
-            let baseChilds = baseFST[childKey];
-            let featureChilds = featureFST[childKey];
+            const baseChilds = baseFST[childKey];
+            const featureChilds = featureFST[childKey];
             let resultingChilds = [];
             if (typeof baseChilds === 'object' && Array.isArray(baseChilds)) {
                 baseChilds.forEach((childBase) => {
                     childBase.featureName = baseFST.featureName;
-                    let childIndex = [];
-                    let childFeature = featureChilds.filter((featureChild, index) => {
+                    const childIndex = [];
+                    const childFeature = featureChilds.filter((featureChild, index) => {
                         if (featureChild.path === childBase.path && featureChild.name === childBase.name) {
                             childIndex.push(index);
                             return true;
@@ -61,9 +58,9 @@ class Imposer {
                     }
                     // if a feature child is matching
                     if (childFeature.length === 1) {
-                        let newChild = childFeature[0];
+                        const newChild = childFeature[0];
                         newChild.featureName = featureFST.featureName;
-                        let subImposeChildOne = this.impose(childBase, newChild, visitorKeys);
+                        const subImposeChildOne = this.impose(childBase, newChild, visitorKeys);
                         if (Array.isArray(subImposeChildOne)) {
                             resultingChilds = resultingChilds.concat(subImposeChildOne);
                         }
@@ -120,10 +117,10 @@ class Imposer {
         return newNode;
     }
     //#region getter/setter
-    setParser(parser) {
+    setParserFactory(parser) {
         this.parserFactory = parser;
     }
-    setGenerator(generator) {
+    setGeneratorFactory(generator) {
         this.generatorFactory = generator;
     }
     setRuleSet(rules) {

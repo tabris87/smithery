@@ -1,4 +1,5 @@
-import { IParser, Node } from '../Interfaces';
+import { IParser } from '../Interfaces';
+import { Node } from '../utils/Node';
 import { FileType } from '../enums';
 
 import { lstatSync, readdirSync, readFileSync } from 'fs';

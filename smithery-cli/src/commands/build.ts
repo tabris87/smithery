@@ -1,25 +1,27 @@
-import {} from ''
+import { Command } from 'commander';
+import { Project } from '../../../smithery-core/src/Project';
+import { SmitheryCommand } from '../interfaces';
 
-function build(configName) {
-    if (!configName) {
-        console.log('No config name given, try to use the default config!\n');
-    }
+function build(configName: string) {
+  if (!configName) {
+    console.log('No config name given, try to use the default config!\n');
+  }
 
-    let oProject = new ProjectCL();
-    oProject.build(configName);
+  let oProject = new Project();
+  oProject.build(configName);
 }
 
-module.exports = {
-    createCommand: function (program) {
-        program
-            .command('build [configName]')
-            .alias('B')
-            .description('Starts the build of your product by the given configuration, otherwise tries to use the default config')
-            .on('--help', function () {
-                console.log('\n', 'Examples:\n', '\n', '$fjs build config1\n', '$fjs build config1');
-            })
-            .action(function (configName) {
-                build(configName);
-            });
-    }
-};
+export class Build implements SmitheryCommand {
+  prepare(program: any): void {
+    program
+      .command('build [configName]')
+      .alias('B')
+      .description('Starts the build of your product by the given configuration, otherwise tries to use the default config')
+      .on('--help', function () {
+        console.log('\n', 'Examples:\n', '\n', '$fjs build config1\n', '$fjs build config1');
+      })
+      .action(function (configName: string) {
+        build(configName);
+      });
+  }
+}

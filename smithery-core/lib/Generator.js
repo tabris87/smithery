@@ -34,7 +34,7 @@ class GeneratorFactory {
      *
      * @param sourceAssignment the identifier (file ending) for which type of source code the generator is needed
      */
-    getGenerator(sourceAssignment) {
+    getGenerator(sourceAssignment = "") {
         return this._generatorMap[sourceAssignment.toUpperCase()];
     }
 }

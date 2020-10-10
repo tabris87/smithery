@@ -5,7 +5,8 @@ import { RuleSet } from './RuleSet';
 import { GeneratorFactory } from './Generator';
 import { ParserFactory } from './Parser';
 import { Imposer } from './Imposer';
-import { Node, IPlugin, IRule } from './Interfaces';
+import { IPlugin, IRule } from './Interfaces';
+import { Node } from './utils/Node';
 
 type configurationOptions = {
   configPath?: string;

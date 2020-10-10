@@ -1,4 +1,4 @@
-import { Parser } from './Interfaces';
+import { IParser } from './Interfaces';
 import { DirectoryParser } from './parsers';
 import { FileType } from './enums';
 
@@ -7,7 +7,7 @@ import { FileType } from './enums';
  * to deliver the correct parser implementation for each type of source code
  */
 export class ParserFactory {
-  private _parserMap: { [key: string]: Parser } = {};
+  private _parserMap: { [key: string]: IParser } = {};
 
   constructor() {
     this._loadDefaultParser();
@@ -28,7 +28,7 @@ export class ParserFactory {
    * @param parser the parser instance to add
    * @param sourceAssignment the source code type to distinguish between other generators
    */
-  public addParser(parser: Parser, sourceAssignment: string): void {
+  public addParser(parser: IParser, sourceAssignment: string): void {
     this._parserMap[sourceAssignment.toUpperCase()] = parser;
   }
 
@@ -37,7 +37,7 @@ export class ParserFactory {
    *
    * @param sourceAssignment the identifier (file ending) for which type of source code the generator is needed
    */
-  public getParser(sourceAssignment: string = ""): Parser | undefined {
+  public getParser(sourceAssignment: string = ""): IParser | undefined {
     return this._parserMap[sourceAssignment.toUpperCase()];
   }
 }

@@ -1,12 +1,10 @@
-import { CliCommand } from './command';
 import { Command } from 'commander';
+import {SmitheryCommand} from '../interfaces';
 
 import * as fs from 'fs';
 import * as path from 'path';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-
-
 
 function init(): void {
   const workingDir: string = process.cwd();
@@ -68,8 +66,8 @@ function init(): void {
     });
 }
 
-export class InitCommand implements CliCommand {
-  createCommand(program: Command): void {
+export class Init implements SmitheryCommand {
+  prepare(program: any): void {
     program
       .command('init')
       .alias('I')

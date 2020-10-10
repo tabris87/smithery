@@ -34,7 +34,7 @@ class ParserFactory {
      *
      * @param sourceAssignment the identifier (file ending) for which type of source code the generator is needed
      */
-    getParser(sourceAssignment) {
+    getParser(sourceAssignment = "") {
         return this._parserMap[sourceAssignment.toUpperCase()];
     }
 }

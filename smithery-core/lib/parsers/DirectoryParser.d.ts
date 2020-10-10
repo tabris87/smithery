@@ -1,8 +1,8 @@
-import { Parser, Node } from '../interfaces';
-export declare class DirectoryParser implements Parser {
+import { IParser, Node } from '../Interfaces';
+export declare class DirectoryParser implements IParser {
     private static visitorKeys;
     parse(sFilePath: string, options?: {
-        [key: string]: any;
+        parent?: Node;
     }): Node;
     getVisitorKeys(): {
         [key: string]: string[];

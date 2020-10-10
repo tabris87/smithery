@@ -43,4 +43,4 @@ class Node {
     }
 }
 exports.Node = Node;
-//# sourceMappingURL=interfaces.js.map
+//# sourceMappingURL=Interfaces.js.map

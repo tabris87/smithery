@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DirectoryParser = void 0;
-const interfaces_1 = require("../interfaces");
+const Interfaces_1 = require("../Interfaces");
 const enums_1 = require("../enums");
 const fs_1 = require("fs");
 const path_1 = require("path");
@@ -10,7 +10,7 @@ class DirectoryParser {
         var _a;
         const route = sFilePath || '.';
         const stats = fs_1.lstatSync(route);
-        const oToken = new interfaces_1.Node();
+        const oToken = new Interfaces_1.Node();
         oToken.name = path_1.basename(route);
         oToken.sourcePath = route;
         if (stats.isDirectory()) {

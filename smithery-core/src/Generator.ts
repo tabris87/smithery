@@ -1,5 +1,5 @@
 import { DirectoryGenerator } from './generators';
-import { Generator } from './Interfaces';
+import { IGenerator } from './Interfaces';
 import { FileType } from './enums';
 
 /**
@@ -7,7 +7,7 @@ import { FileType } from './enums';
  * to deliver the correct generator implementation for each type of source code
  */
 export class GeneratorFactory {
-  private _generatorMap: { [key: string]: Generator } = {};
+  private _generatorMap: { [key: string]: IGenerator } = {};
 
   constructor() {
     this._loadDefaultGenerators();
@@ -28,7 +28,7 @@ export class GeneratorFactory {
    * @param generator the generator instance to add
    * @param sourceAssignment the source code type to distinguish between other generators
    */
-  public addGenerator(generator: Generator, sourceAssignment: string): void {
+  public addGenerator(generator: IGenerator, sourceAssignment: string): void {
     this._generatorMap[sourceAssignment.toUpperCase()] = generator;
   }
 
@@ -37,7 +37,7 @@ export class GeneratorFactory {
    *
    * @param sourceAssignment the identifier (file ending) for which type of source code the generator is needed
    */
-  public getGenerator(sourceAssignment: string = ""): Generator | undefined {
+  public getGenerator(sourceAssignment: string = ""): IGenerator | undefined {
     return this._generatorMap[sourceAssignment.toUpperCase()];
   }
 }

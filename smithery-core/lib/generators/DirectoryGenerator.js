@@ -17,7 +17,7 @@ class DirectoryGenerator {
         if (aItems) {
             this._processFiles(aItems, route);
         }
-        // Sry for this but this is the only class not delivering a correct source code.
+        // Sry for this, but it is the only class not delivering a correct source code.
         return 'Done';
     }
     /**
@@ -30,10 +30,12 @@ class DirectoryGenerator {
         for (const oNode of aNodesToProcess) {
             if (oNode.type === enums_1.FileType.Folder) {
                 fs_1.mkdirSync(path_1.join(sTargetPath, oNode.name));
-                this._processFiles(oNode.children, path_1.join(sTargetPath, oNode.name));
+                this._processFiles(oNode.children || [], path_1.join(sTargetPath, oNode.name));
             }
             else {
-                fs_1.writeFileSync(path_1.join(sTargetPath, oNode.name), oNode.content);
+                if (oNode.content && oNode.content !== '') {
+                    fs_1.writeFileSync(path_1.join(sTargetPath, oNode.name), oNode.content);
+                }
             }
         }
     }
