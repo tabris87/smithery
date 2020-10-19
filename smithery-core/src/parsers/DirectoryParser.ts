@@ -8,7 +8,7 @@ import { join, extname, basename } from 'path';
 export class DirectoryParser implements IParser {
   private static visitorKeys: { [key: string]: string[] } = {
     Folder: ['children'],
-    File: [],
+    File: []
   };
 
   parse(sFilePath: string, options?: { parent?: Node }): Node {
