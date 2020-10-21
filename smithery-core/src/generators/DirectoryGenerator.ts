@@ -1,4 +1,4 @@
-import { IGenerator} from '../Interfaces';
+import { IGenerator } from '../Interfaces';
 import { Node } from '../utils/Node';
 import { FileType } from '../enums';
 
@@ -15,10 +15,8 @@ export class DirectoryGenerator implements IGenerator {
   public generate(oAST: Node, options?: { filePath: string }): string {
     const route = options?.filePath || '.';
 
-    const aItems = oAST.children;
-    if (aItems) {
-      this._processFiles(aItems, route);
-    }
+
+    this._processFiles([oAST], route);
     // Sry for this, but it is the only class not delivering a correct source code.
     return 'Done';
   }
