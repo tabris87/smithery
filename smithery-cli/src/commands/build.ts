@@ -1,5 +1,4 @@
-import { Command } from 'commander';
-import { Project } from '../../../smithery-core/src/Project';
+import { Project } from 'smithery';
 import { SmitheryCommand } from '../interfaces';
 
 function build(configName: string) {
@@ -7,7 +6,7 @@ function build(configName: string) {
     console.log('No config name given, try to use the default config!\n');
   }
 
-  let oProject = new Project();
+  const oProject = new Project();
   oProject.build(configName);
 }
 

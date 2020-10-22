@@ -5,7 +5,7 @@ import { commands } from './commands';
 class SmitheryCLI {
   private packageJSON: { [key: string]: any };
   constructor() {
-    this.packageJSON = require('../package.json');
+    this.packageJSON = require('../../package.json');
     this._setupOptions();
   }
 

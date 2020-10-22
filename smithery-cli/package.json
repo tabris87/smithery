@@ -7,12 +7,10 @@
     "url": "https://github.com/tabris87/smithery"
   },
   "bin": {
-    "smith": "bin/smithery-cli/src/cli.js"
+    "smith": "bin/src/cli.js"
   },
   "files": [
-    "bin/**/*",
-    "README.md",
-    "package.json"
+    "bin"
   ],
   "scripts": {
     "test": "npx mocha -r ts-node/register -r source-map-support/register src/**/*.spec.ts --diff --reporter spec --reporter mochawesome --reporter-options reportDir=reports/test-results,reportFilename=testResults",
@@ -21,7 +19,7 @@
     "lint": "npx eslint . --ext .ts",
     "lint-report": "npx eslint . --ext .ts -f node_modules/eslint-detailed-reporter/lib/detailed.js -o reports/lintingReport.html",
     "format": "npx prettier --write \"src/**/*.ts\"",
-    "build": "npx tsc"
+    "build": "node clean.js | npx tsc"
   },
   "author": "Adrian Marten",
   "license": "Apache-2.0",
@@ -31,7 +29,8 @@
     "@types/inquirer": "^7.3.1",
     "chalk": "^4.1.0",
     "commander": "^6.1.0",
-    "inquirer": "^7.3.3"
+    "inquirer": "^7.3.3",
+    "smithery": "file:../smithery-core/smithery-0.3.0.tgz"
   },
   "devDependencies": {
     "@types/chai": "^4.2.13",

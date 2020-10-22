@@ -1,2 +1,4 @@
-lib
-reports
+lib/
+reports/
+
+smithery-*.tgz

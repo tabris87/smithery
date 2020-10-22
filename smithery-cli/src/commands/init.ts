@@ -1,5 +1,4 @@
-import { Command } from 'commander';
-import {SmitheryCommand} from '../interfaces';
+import { SmitheryCommand } from '../interfaces';
 
 import * as fs from 'fs';
 import * as path from 'path';
