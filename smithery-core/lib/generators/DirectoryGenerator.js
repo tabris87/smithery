@@ -13,10 +13,7 @@ class DirectoryGenerator {
      */
     generate(oAST, options) {
         const route = (options === null || options === void 0 ? void 0 : options.filePath) || '.';
-        const aItems = oAST.children;
-        if (aItems) {
-            this._processFiles(aItems, route);
-        }
+        this._processFiles([oAST], route);
         // Sry for this, but it is the only class not delivering a correct source code.
         return 'Done';
     }

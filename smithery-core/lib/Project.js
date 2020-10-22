@@ -7,7 +7,7 @@ const RuleSet_1 = require("./RuleSet");
 const Generator_1 = require("./Generator");
 const Parser_1 = require("./Parser");
 const Imposer_1 = require("./Imposer");
-const Interfaces_1 = require("./Interfaces");
+const Node_1 = require("./utils/Node");
 class Project {
     constructor(options) {
         var _a;
@@ -113,7 +113,7 @@ class Project {
         // take the project file path from the options or from the readed config;
         this._projectAST =
             ((_a = this._parserFactory
-                .getParser('DIR')) === null || _a === void 0 ? void 0 : _a.parse(path_1.join(this._workingDir, options.projectFiles || config.projectFiles))) || new Interfaces_1.Node();
+                .getParser('DIR')) === null || _a === void 0 ? void 0 : _a.parse(path_1.join(this._workingDir, options.projectFiles || config.projectFiles))) || new Node_1.Node();
     }
     build(configName) {
         var _a, _b, _c, _d, _e, _f;

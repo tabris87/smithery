@@ -1,7 +1,7 @@
 import { ParserFactory } from './Parser';
 import { GeneratorFactory } from './Generator';
 import { RuleSet } from './RuleSet';
-import { Node } from './Interfaces';
+import { Node } from './utils/Node';
 export declare class Imposer {
     private parserFactory;
     private generatorFactory;

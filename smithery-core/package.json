@@ -18,9 +18,9 @@
     "build": "npx tsc"
   },
   "files": [
-    "lib/**/*",
-    "package.json"
+    "lib"
   ],
+  "main": "lib/api.js",
   "dependencies": {
     "css-what": "^3.3.0"
   },

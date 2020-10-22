@@ -1,4 +1,5 @@
-import { IGenerator, Node } from '../Interfaces';
+import { IGenerator } from '../Interfaces';
+import { Node } from '../utils/Node';
 /**
  * Implementation of the Generator interface to generate files and directories
  */
