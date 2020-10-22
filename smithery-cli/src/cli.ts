@@ -2,15 +2,19 @@
 import * as commander from 'commander';
 import { commands } from './commands';
 
+type PACKAGEJSON = {
+  [key: string]: number | boolean | string | PACKAGEJSON
+}
+
 class SmitheryCLI {
-  private packageJSON: { [key: string]: any };
+  private packageJSON: PACKAGEJSON;
   constructor() {
     this.packageJSON = require('../../package.json');
     this._setupOptions();
   }
 
   private _setupOptions() {
-    commander.program.version(this.packageJSON.version);
+    commander.program.version(this.packageJSON.version as string);
     commands.forEach(command => {
       command.prepare(commander.program);
     })/* 
