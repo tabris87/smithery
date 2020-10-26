@@ -1,15 +1,36 @@
 import { SmitheryCommand } from '../interfaces';
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as chalk from 'chalk';
-import * as inquirer from 'inquirer';
+import fs from 'fs';
+import path from 'path';
+import inquirer from 'inquirer';
+
+function setupProjectStructure(configs: {
+  model: string,
+  configs: string,
+  projectFiles: string,
+  buildFolder: string
+}): void {
+  Object.values(configs).forEach(value => {
+    const pathParts: string[] = value.split(/(\\|\/)/);
+    pathParts.forEach((value: string, index: number, arr: string[]) => {
+      const checkPath = path.join(process.cwd(), ...arr.slice(0, index + 1));
+      if (!fs.existsSync(checkPath)) {
+        if (path.extname(value) !== '') {
+          fs.writeFileSync(checkPath, '', 'utf-8');
+        } else {
+          fs.mkdirSync(checkPath);
+        }
+      }
+    })
+  });
+};
 
 function init(): void {
   const workingDir: string = process.cwd();
+  debugger;
 
   if (fs.existsSync(path.join(workingDir, ".smithery"))) {
-    console.log(chalk.yellow.bold("There exists already a smithery project file!"));
+    console.log("There exists already a smithery project file!");
     process.exit(1);
   }
 
@@ -56,11 +77,13 @@ function init(): void {
   inquirer
     .prompt(questions)
     .then(function (answers) {
-      var sProjectConfig = JSON.stringify(answers);
+      let sProjectConfig = JSON.stringify(answers);
       sProjectConfig = sProjectConfig.replace(/,/g, ',\n\t');
       sProjectConfig = sProjectConfig.replace(/\{/, '{\n\t');
       sProjectConfig = sProjectConfig.replace(/\}/, '\n}');
       fs.writeFileSync(path.join(workingDir, '.smithery'), sProjectConfig);
+
+      setupProjectStructure(answers);
       process.exit(0);
     });
 }
