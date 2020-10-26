@@ -20,6 +20,13 @@ function setupProjectStructure(configs: {
         } else {
           fs.mkdirSync(checkPath);
         }
+        if (index === arr.length - 1) {
+          console.log(`\u001B[32m${checkPath} [created]\u001b[0m`);
+        }
+      } else {
+        if (index === arr.length - 1) {
+          console.log(`\u001B[33m${checkPath} [skipped] -> already exists!\u001b[0m`);
+        }
       }
     })
   });
@@ -27,10 +34,9 @@ function setupProjectStructure(configs: {
 
 function init(): void {
   const workingDir: string = process.cwd();
-  debugger;
 
   if (fs.existsSync(path.join(workingDir, ".smithery"))) {
-    console.log("There exists already a smithery project file!");
+    console.log("\u001b[31mThere exists already a smithery project file!\u001b[0m");
     process.exit(1);
   }
 
