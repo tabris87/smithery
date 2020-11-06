@@ -1,6 +1,6 @@
 {
   "name": "smithery",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "The \"house\" of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
   "author": "Adrian Marten",
   "license": "Apache-2.0",
@@ -15,7 +15,8 @@
     "lint": "npx eslint . --ext .ts",
     "lint-report": "npx eslint . --ext .ts -f node_modules/eslint-detailed-reporter/lib/detailed.js -o reports/lintingReport.html",
     "format": "npx prettier --write \"src/**/*.ts\"",
-    "build": "npx tsc"
+    "build": "node clean.js | npx tsc",
+    "build-locally": "npm run build | npm pack"
   },
   "files": [
     "lib"
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.3",
+    "@types/mock-fs": "^4.13.0",
     "@types/node": "^14.11.2",
     "@types/sinon": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^4.3.0",

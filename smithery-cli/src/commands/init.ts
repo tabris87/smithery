@@ -36,8 +36,10 @@ function init(): void {
   const workingDir: string = process.cwd();
 
   if (fs.existsSync(path.join(workingDir, ".smithery"))) {
-    console.log("\u001b[31mThere exists already a smithery project file!\u001b[0m");
-    process.exit(1);
+    console.log(`\u001b[4m\u001B[33m'.smithery' config-file already exists. Generating structure:\u001b[0m`);
+    const configFile = JSON.parse(fs.readFileSync(path.join(workingDir, '.smithery'), 'utf-8'));
+    setupProjectStructure(configFile);
+    process.exit(0);
   }
 
   const questions = [{

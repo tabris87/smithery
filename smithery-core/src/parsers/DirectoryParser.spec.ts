@@ -133,5 +133,9 @@ describe('Check if the Directory Parser correctly parses file systems into the e
     expect(ast.children ? ast.children[0] : undefined).not.to.be.undefined;
     expect(ast.children ? ast.children[0].type : 'FalseType').to.be.equal(FileType.File);
     expect(ast.children ? ast.children[0].content : 'FalseContent').to.be.equal('This is the correct File content');
+
+    lstatSyncStub.restore();
+    readFileSyncStub.restore();
+    readdirSyncStub.restore();
   });
 });

@@ -7,20 +7,21 @@ import { ParserFactory } from './Parser';
 import { Imposer } from './Imposer';
 import { IPlugin, IRule } from './Interfaces';
 import { Node } from './utils/Node';
+import { Rule } from './Rule';
 
 type configurationOptions = {
   configPath?: string;
   buildFolder?: string;
   projectFiles?: string;
   projectRules?: string;
-  configs?: [];
+  configs?: { name: string, features: string[] }[];
   plugins?: [];
 };
 
 export class Project {
   private _workingDir: string
   private _configs: { name: string; features: string[] }[];
-  private _config: null | { name: string; features: string[] };
+  private _config: null | { name: string; features: string[] } = null;
   private _buildTarget: string;
   private _plugins: IPlugin[] | null;
   private _projectAST: Node;
@@ -30,110 +31,129 @@ export class Project {
   private _generatorFactory: GeneratorFactory = new GeneratorFactory();
   private _imposer: Imposer = new Imposer(this._parserFactory, this._generatorFactory, this._ruleSet);
 
+  private checkCustomConfiguration(path: string | undefined): { content?: { [key: string]: any }, exists: boolean } {
+    if (path && path !== '') {
+      if (existsSync(join(this._workingDir, path))) {
+        const cont = JSON.parse(readFileSync(join(this._workingDir, path), 'utf-8'));
+        return { content: cont, exists: true };
+      } else {
+        return { exists: false };
+      }
+    } else {
+      return { exists: false };
+    }
+  }
+
+  private checkSmitheryConfig(): { content?: { [key: string]: any }, exists: boolean } {
+    if (existsSync(join(this._workingDir, 'smithery.json'))) {
+      const cont = JSON.parse(readFileSync(join(this._workingDir, 'smithery.json'), 'utf-8'));
+      return { content: cont, exists: true };
+    } else {
+      return { exists: false };
+    }
+  }
+
   constructor(options?: configurationOptions) {
     this._workingDir = process.cwd();
     options = options || {};
 
-    this._configs = [];
-    this._config = null;
+    // we should have 3 options for configurations 
+    // 1. the .smithery config file written in json
+    // 2. a custom config file written in json
+    // 3. configuration options directly given by the configuration options object
 
-    let configPath:
-      | string
-      | {
-        pathType: string;
-        fullPath: string;
-        exists: boolean;
-      };
-    const configPaths = [
-      {
-        type: 'custom',
-        path: options.configPath,
+    // They are priorized bottom to top to allow overwriting
+
+    const smithConfig = this.checkSmitheryConfig();
+    const custConfig = this.checkCustomConfiguration(options.configPath);
+    const directConfig = {
+      content: {
+        configs: options?.configs,
+        buildFolder: options?.buildFolder,
+        projectFiles: options?.projectFiles,
+        plugins: options?.plugins,
+        projectRules: options?.projectRules
       },
-      {
-        type: 'smithery',
-        path: '.smithery',
-      },
-      {
-        type: 'package',
-        path: 'package.json',
-      },
-    ]
-      .map((path) => {
-        return {
-          pathType: path.type,
-          exists: path.path ? existsSync(join(this._workingDir, path.path)) : false,
-          fullPath: path.path ? join(this._workingDir, path.path) : '',
-        };
-      })
-      .filter((path) => path.exists);
-
-    configPaths.sort((a, b) => {
-      if (a.pathType === 'custom') {
-        return -1;
-      }
-
-      if (a.pathType !== 'custom' && b.pathType === 'custom') {
-        return 1;
-      }
-
-      if (a.pathType === 'smithery' && b.pathType === 'package') {
-        return -1;
-      }
-
-      if (a.pathType === 'package' && b.pathType === 'smithery') {
-        return 1;
-      }
-
-      return 0;
-    });
-
-    configPath = configPaths[0];
-    configPath = configPath?.fullPath || '';
-
-    let config;
-    let sErrMess = '';
-
-    const errorText = 'Failed to read configuration for project ' + `at "${this._workingDir}". Error: ${sErrMess}`;
-    try {
-      const configContent = readFileSync(configPath, { encoding: 'utf-8' });
-      config = JSON.parse(configContent);
-      if (configPath.endsWith('package.json') && config.featureCLI) {
-        config = config.smithery;
-      }
-    } catch (err) {
-      // if options object given configs, buildfolder and projectfile path
-      // we can continue
-      if (options.configs && options.buildFolder && options.projectFiles) {
-        config = options;
-      }
-      if (err.code !== 'ENOENT') {
-        throw new Error(errorText);
-      } else {
-        sErrMess = err.message;
-      }
+      exists: options?.configs ||
+        options?.buildFolder ||
+        options?.projectFiles ||
+        options?.projectFiles ||
+        options?.plugins ||
+        options?.projectRules
     }
 
-    if (!config) {
-      // tslint:disable-next-line: no-console
-      console.log(errorText);
-      process.exit(1);
+    const errorTextSetup = `Failed to setup configuration for project at "${this._workingDir}".`;
+    const errorTextInvalidConfiguration = `The used configuration for project "${this._workingDir}" is inclomplete.`;
+
+    if (!smithConfig.exists && !custConfig.exists && !directConfig.exists) {
+      throw new Error(errorTextSetup);
     }
 
-    /**
-     * @todo:setup the model ->  add model for config validity checks and config building
-     */
+    type internalConfig = {
+      configs: string | { name: string, features: string[] }[], //musthave
+      buildFolder: string, //musthave
+      projectFiles: string, //musthave
+      plugins: IPlugin | IPlugin[],
+      projectRules: string | Rule[]
+    }
+
+    const config: internalConfig = {
+      configs: '', //musthave
+      buildFolder: '', //musthave
+      projectFiles: '', //musthave
+      plugins: [],
+      projectRules: []
+    }
+
+    if (smithConfig.exists) {
+      config.configs = smithConfig.content?.configs;
+      config.buildFolder = smithConfig.content?.buildFolder;
+      config.projectFiles = smithConfig.content?.projectFiles;
+      config.plugins = smithConfig.content?.plugins;
+      config.projectRules = smithConfig.content?.projectRules;
+    }
+
+    if (custConfig.exists) {
+      config.configs = custConfig.content?.configs || config.configs;
+      config.buildFolder = custConfig.content?.buildFolder || config.buildFolder;
+      config.projectFiles = custConfig.content?.projectFiles || config.projectFiles;
+      config.plugins = custConfig.content?.plugins || config.plugins;
+      config.projectRules = custConfig.content?.projectRules || config.projectRules;
+    }
+
+    if (directConfig.exists) {
+      config.configs = directConfig.content?.configs || config.configs;
+      config.buildFolder = directConfig.content?.buildFolder || config.buildFolder;
+      config.projectFiles = directConfig.content?.projectFiles || config.projectFiles;
+      config.plugins = directConfig.content?.plugins || config.plugins;
+      config.projectRules = directConfig.content?.projectRules || config.projectRules;
+    }
+
+    if (config.configs === '' && config.buildFolder === '' && config.projectFiles === '') {
+      throw new Error(errorTextInvalidConfiguration);
+    }
+
     // setup the configs
-    if (config.configs && typeof config.configs === 'string' && existsSync(join(this._workingDir, config.configs))) {
+    if (typeof config.configs === 'string' && existsSync(join(this._workingDir, config.configs))) {
       this._configs = this._getConfigFiles(join(this._workingDir, config.configs));
+    } else if (typeof config.configs !== 'string') {
+      this._configs = config.configs;
     } else {
-      this._configs = options.configs || config.configs;
+      throw new Error('The build-configurations setup is not given properly')
     }
 
     // setting up the src and destination for the build
-    this._buildTarget = options.buildFolder || config.buildFolder;
+    this._buildTarget = config.buildFolder;
 
-    // take the plugins from the config reed or the options object
-    this._plugins = options.plugins || config.plugins;
+    // take the plugins from the config read or the options object
+    if (config.plugins && Array.isArray(config.plugins)) {
+      this._plugins = config.plugins;
+    } else if (config.plugins) {
+      this._plugins = [config.plugins];
+    } else {
+      this._plugins = [];
+    }
+
     if (this._plugins && this._plugins.length > 0) {
       this._plugins.forEach((oPlugin) => this._loadPlugin(oPlugin));
     }
