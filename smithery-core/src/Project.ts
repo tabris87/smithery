@@ -9,6 +9,8 @@ import { IPlugin, IRule } from './Interfaces';
 import { Node } from './utils/Node';
 import { Rule } from './Rule';
 
+import { FileType} from './enums';
+
 type configurationOptions = {
   configPath?: string;
   buildFolder?: string;
@@ -16,6 +18,14 @@ type configurationOptions = {
   projectRules?: string;
   configs?: { name: string, features: string[] }[];
   plugins?: [];
+};
+
+type internalConfig = {
+  configs: string | { name: string, features: string[] }[], //musthave
+  buildFolder: string, //musthave
+  projectFiles: string, //musthave
+  plugins: IPlugin | IPlugin[],
+  projectRules: string | Rule[]
 };
 
 export class Project {
@@ -30,6 +40,8 @@ export class Project {
   private _parserFactory: ParserFactory = new ParserFactory();
   private _generatorFactory: GeneratorFactory = new GeneratorFactory();
   private _imposer: Imposer = new Imposer(this._parserFactory, this._generatorFactory, this._ruleSet);
+
+  private _configurationOptions: internalConfig;
 
   private checkCustomConfiguration(path: string | undefined): { content?: { [key: string]: any }, exists: boolean } {
     if (path && path !== '') {
@@ -87,14 +99,6 @@ export class Project {
 
     if (!smithConfig.exists && !custConfig.exists && !directConfig.exists) {
       throw new Error(errorTextSetup);
-    }
-
-    type internalConfig = {
-      configs: string | { name: string, features: string[] }[], //musthave
-      buildFolder: string, //musthave
-      projectFiles: string, //musthave
-      plugins: IPlugin | IPlugin[],
-      projectRules: string | Rule[]
     }
 
     const config: internalConfig = {
@@ -170,8 +174,10 @@ export class Project {
     // take the project file path from the options or from the readed config;
     this._projectAST =
       this._parserFactory
-        .getParser('DIR')
-        ?.parse(join(this._workingDir, options.projectFiles || config.projectFiles)) || new Node();
+        .getParser(FileType.Folder)
+        ?.parse(join(this._workingDir, config.projectFiles)) || new Node();
+
+    this._configurationOptions = config;
   }
 
   public build(configName: string): void {
@@ -204,6 +210,7 @@ export class Project {
     aFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
 
     const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
+    debugger;
     if (baseFST.length === 0) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
@@ -231,7 +238,7 @@ export class Project {
       resultFST = this._imposer.impose(
         resultFST,
         featureFST,
-        this._parserFactory.getParser('DIR')?.getVisitorKeys() || {},
+        this._parserFactory.getParser(FileType.Folder)?.getVisitorKeys() || {},
       );
     }
 
@@ -239,7 +246,7 @@ export class Project {
     this._clearBuildTarget(this._buildTarget);
     // create the build target newly
     mkdirSync(this._buildTarget);
-    this._generatorFactory.getGenerator('DIR')?.generate(resultFST, {
+    this._generatorFactory.getGenerator(FileType.Folder)?.generate(resultFST, {
       filePath: join(this._workingDir, this._buildTarget),
     });
 
@@ -254,7 +261,7 @@ export class Project {
 
     const oConfig = this._configs.filter((config) => config.name === configName);
     if (oConfig.length === 0) {
-      throw new Error('Config for ' + configName + ' does not exist withing configs');
+      throw new Error('Config for ' + configName + ' does not exist withing ' + (typeof this._configurationOptions.configs === 'string' ? this._configurationOptions.configs : 'configurations'));
     }
 
     this._config = oConfig[0];
