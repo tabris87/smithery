@@ -210,7 +210,6 @@ export class Project {
     aFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
 
     const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
-    debugger;
     if (baseFST.length === 0) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }

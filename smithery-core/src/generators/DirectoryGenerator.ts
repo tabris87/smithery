@@ -30,8 +30,8 @@ export class DirectoryGenerator implements IGenerator {
   private _processFiles(aNodesToProcess: Node[], sTargetPath: string) {
     for (const oNode of aNodesToProcess) {
       if (oNode.type === FileType.Folder) {
-        mkdirSync(join(sTargetPath, oNode.name));
-        this._processFiles(oNode.children || [], join(sTargetPath, oNode.name));
+        mkdirSync(join(sTargetPath, oNode.name !== 'root' ? oNode.name : ''));
+        this._processFiles(oNode.children || [], join(sTargetPath, oNode.name !== 'root' ? oNode.name : ''));
       } else {
         if (oNode.content && oNode.content !== '') {
           writeFileSync(join(sTargetPath, oNode.name), oNode.content);

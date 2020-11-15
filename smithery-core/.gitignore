@@ -1,4 +1,5 @@
 lib/
 reports/
+node_modules/
 
 smithery-*.tgz
