@@ -10,19 +10,15 @@ export const rule: IRule = {
     const featureParser = context.getParserFactory().getParser(featureFST.ending);
 
     if (!baseParser || !featureParser) {
-      throw new Error('Base-FeatureTree-Parser and Feature-FeatureTree-Parser not correctly defined');
+      throw new Error('Base-FeatureTree-Parser or Feature-FeatureTree-Parser not correctly defined');
     }
 
-    if (!baseFST.content || !featureFST.content) {
-      throw new Error('BaseFeatureTree and FeatureFeatureTree does not contain source code');
+    if (!baseFST.content || baseFST.content === '' || !featureFST.content || featureFST.content === '') {
+      throw new Error('BaseFeatureTree or FeatureFeatureTree does not contain source code');
     }
 
-    const baseAST = context.getParserFactory().getParser(baseFST.ending)?.parse(baseFST.content || "", {});
-    const featureAST = context.getParserFactory().getParser(featureFST.ending)?.parse(featureFST.content || "", {});
-
-    if (!baseAST || !featureAST) {
-      throw new Error('BaseAST and FeatureAST not available')
-    }
+    const baseAST = baseParser.parse(baseFST.content || "", {});
+    const featureAST = featureParser.parse(featureFST.content || "", {});
 
     baseAST.featureName = baseFST.featureName;
     featureAST.featureName = featureFST.featureName;
