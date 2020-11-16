@@ -8,9 +8,9 @@ import * as path from 'path';
 
 import * as mock from 'mock-fs';
 
-describe('Scenario test for a single build using the default configuration', () => {
+describe('Scenario test for builds using different configurations', () => {
   let backupLog: { (...data: any[]): void; (message?: any, ...optionalParams: any[]): void; (...data: any[]): void; (message?: any, ...optionalParams: any[]): void; };
-  const texts: string[] = [];
+  let texts: string[] = [];
 
   beforeEach(() => {
     backupLog = console.log;
@@ -27,7 +27,8 @@ describe('Scenario test for a single build using the default configuration', () 
         console.log = backupLog;
         texts.forEach((msg: string) => {
           console.log(msg);
-        })
+        });
+        texts = [];
       }
       if (this?.currentTest?.state !== 'passed') {
         // a test, before(), or beforeEach() hook just failed
@@ -66,6 +67,50 @@ describe('Scenario test for a single build using the default configuration', () 
 
     expect(writeFileSyncStub.calledOnce).to.be.true;
     expect(writeFileSyncStub.calledWith('README.md', 'utf-8'));
+
+    mock.restore();
+    mkdirSyncStub.restore();
+    writeFileSyncStub.restore();
+  });
+
+  it('Perform build of one additional folder and file withing', () => {
+    mock({
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'default.config': 'Base',
+        'one.config': 'Base\nOne'
+      },
+      'features': {
+        'Base': {
+          'README.md': 'TEST'
+        },
+        'One': {
+          'src': {
+            'main.js': 'function run() {console.log("running");}\n\nrun();'
+          }
+        }
+      }
+    })
+
+    const mkdirSyncStub = sinon.stub(fs, 'mkdirSync');
+    const writeFileSyncStub = sinon.stub(fs, 'writeFileSync');
+
+    const p = new Project();
+    p.build('one');
+    //first the build folder because this one is missing
+    //second call for the root folder
+    expect(mkdirSyncStub.calledTwice).to.be.true;
+    expect(mkdirSyncStub.calledWith(path.join(process.cwd(), 'build'))).to.be.true;
+    expect(mkdirSyncStub.calledWith(path.join(process.cwd(), 'build', 'src'))).to.be.true;
+
+    expect(writeFileSyncStub.calledTwice).to.be.true;
+    expect(writeFileSyncStub.calledWith(path.join(process.cwd(), 'build', 'README.md'), 'utf-8'));
+    expect(writeFileSyncStub.calledWith(path.join(process.cwd(), 'build', 'src', 'main.js'), 'utf-8'));
 
     mock.restore();
     mkdirSyncStub.restore();
