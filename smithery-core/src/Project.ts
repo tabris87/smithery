@@ -9,7 +9,7 @@ import { IPlugin, IRule } from './Interfaces';
 import { Node } from './utils/Node';
 import { Rule } from './Rule';
 
-import { FileType} from './enums';
+import { FileType } from './enums';
 
 type configurationOptions = {
   configPath?: string;
@@ -242,9 +242,9 @@ export class Project {
     }
 
     // check if build target already exists and clear it
-    this._clearBuildTarget(this._buildTarget);
+    this._clearBuildTarget(join(this._workingDir, this._buildTarget));
     // create the build target newly
-    mkdirSync(this._buildTarget);
+    mkdirSync(join(this._workingDir, this._buildTarget));
     this._generatorFactory.getGenerator(FileType.Folder)?.generate(resultFST, {
       filePath: join(this._workingDir, this._buildTarget),
     });

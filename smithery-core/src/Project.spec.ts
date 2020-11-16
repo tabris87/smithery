@@ -1,6 +1,7 @@
 import { expect, assert } from 'chai';
 import 'mocha';
 import { stub } from 'sinon';
+import * as mock from 'mock-fs';
 
 import * as fs from 'fs';
 
@@ -15,6 +16,22 @@ describe('Testing the Project class', () => {
   describe('Project should be able to read different type of configurations', () => {
 
     it('Project should be able to instantiate by a directly given configuration', () => {
+      mock({
+        'smithery.json': `{
+          "model":"./model/model.xml",
+          "configs":"configurations",
+          "projectFiles":"features",
+          "buildFolder":"build"
+        }`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
       const p = new Project({
         buildFolder: 'build',
         projectFiles: 'features',
@@ -22,85 +39,55 @@ describe('Testing the Project class', () => {
       });
 
       expect(p).not.to.be.undefined;
+      mock.restore();
     });
 
     it('Project should be able to instantiate by a configuration path', () => {
-      const existsSyncStub = stub(fs, 'existsSync');
-      existsSyncStub
-        //used for checkSmitheryConfig
-        .onCall(0).returns(false)
-        //used for checkCustomConfigurations
-        .onCall(1).returns(true)
-        //used on line 137 (// setup the configs)
-        .onCall(2).returns(true)
-        //used at _getConfigFiles
-        .onCall(3).returns(true);
-
-      const readFileSyncStub = stub(fs, 'readFileSync');
-      readFileSyncStub
-        //used to read the configuration file
-        .onFirstCall().returns(`{
+      mock({
+        'test.config': `{
           "model":"./model/model.xml",
           "configs":"configurations",
           "projectFiles":"features",
           "buildFolder":"build"
-        }`)
-        //used at _getConfigFiles
-        .onSecondCall().returns(`
-          Base
-        `);
-
-      const readdirSyncStub = stub(fs, 'readdirSync');
-      readdirSyncStub
-        //used to get all configurations at the given configuration path
-        .onFirstCall().returns(['default.config']);
+        }`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
 
       const p = new Project({ configPath: 'test.config' });
       expect(p).not.to.be.undefined;
 
-      existsSyncStub.restore();
-      readdirSyncStub.restore();
-      readFileSyncStub.restore();
+      mock.restore();
     });
 
     it('Project should be able to instantiate by the smithery.json configuration', () => {
-      const existsSyncStub = stub(fs, 'existsSync');
-      existsSyncStub
-        //used for checkSmitheryConfig
-        .onCall(0).returns(true)
-        //not called because of precheck on empty paths
-        /* //used for checkCustomConfigurations
-        .onCall(1).returns(false) */
-        //used on line 137 (// setup the configs)
-        .onCall(1).returns(true)
-        //used at _getConfigFiles
-        .onCall(2).returns(true);
-
-      const readFileSyncStub = stub(fs, 'readFileSync');
-      readFileSyncStub
-        //used to read the configuration file
-        .onFirstCall().returns(`{
+      mock({
+        'smithery.json': `{
           "model":"./model/model.xml",
           "configs":"configurations",
           "projectFiles":"features",
           "buildFolder":"build"
-        }`)
-        //used at _getConfigFiles
-        .onSecondCall().returns(`
-          Base
-        `);
-
-      const readdirSyncStub = stub(fs, 'readdirSync');
-      readdirSyncStub
-        //used to get all configurations at the given configuration path
-        .onFirstCall().returns(['default.config']);
+        }`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
 
       const p = new Project();
       expect(p).not.to.be.undefined;
 
-      existsSyncStub.restore();
-      readdirSyncStub.restore();
-      readFileSyncStub.restore();
+      mock.restore();
     });
   });
 });
