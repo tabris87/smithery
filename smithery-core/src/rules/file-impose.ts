@@ -17,8 +17,8 @@ export const rule: IRule = {
       throw new Error('BaseFeatureTree or FeatureFeatureTree does not contain source code');
     }
 
-    const baseAST = baseParser.parse(baseFST.content || "", {});
-    const featureAST = featureParser.parse(featureFST.content || "", {});
+    const baseAST = baseParser.parse(baseFST.content, {});
+    const featureAST = featureParser.parse(featureFST.content, {});
 
     baseAST.featureName = baseFST.featureName;
     featureAST.featureName = featureFST.featureName;
