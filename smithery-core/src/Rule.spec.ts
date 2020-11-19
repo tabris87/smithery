@@ -14,7 +14,7 @@ import { Node } from './utils/Node';
 describe('Check the Rule Class', () => {
   it('A Rule should be build up just by providing simple information', () => {
     const ruleSetup: IRule = {
-      apply: (base: Node, feature: Node, context: Imposer) => {
+      apply: (_: Node, __: Node, ___: Imposer) => {
         return new Node();
       },
       target: 'testing',
@@ -26,7 +26,7 @@ describe('Check the Rule Class', () => {
 
   it('A rule should provide correctly witch language it supports, either normal written, uppercase, lowercase', () => {
     const ruleSetup: IRule = {
-      apply: (base: Node, feature: Node, context: Imposer) => {
+      apply: (_: Node, __: Node, ___: Imposer) => {
         return new Node();
       },
       target: 'testing',
@@ -43,7 +43,7 @@ describe('Check the Rule Class', () => {
 
   it('A rule states if it fits to a node combination', () => {
     const ruleSetup: IRule = {
-      apply: (base: Node, feature: Node, context: Imposer) => {
+      apply: (_: Node, __: Node, ___: Imposer) => {
         return new Node();
       },
       target: 'testing',

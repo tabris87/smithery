@@ -14,7 +14,6 @@ describe('Testing the Project class', () => {
   });
 
   describe('Project should be able to read different type of configurations', () => {
-
     it('Project should be able to instantiate by a directly given configuration', () => {
       mock({
         'smithery.json': `{
@@ -66,6 +65,23 @@ describe('Testing the Project class', () => {
       mock.restore();
     });
 
+    it('Project has to throw a error if a given custom configuration is not within the project', () => {
+      mock({
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
+
+      assert.throws(() => { new Project({ configPath: 'test.config' }) }, 'The configuration "test.config" is not within the project folder!!');
+
+      mock.restore();
+    });
+
     it('Project should be able to instantiate by the smithery.json configuration', () => {
       mock({
         'smithery.json': `{
@@ -89,5 +105,111 @@ describe('Testing the Project class', () => {
 
       mock.restore();
     });
+
+    it('All configurations should combine together', () => {
+      mock({
+        'smithery.json': `{
+          "buildFolder":"build"
+        }`,
+        'test.config': `{
+          "configs":"configurations"  
+        }`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
+
+      const p = new Project({ projectFiles: 'features', configPath: 'test.config' });
+      expect(p).not.to.be.undefined;
+
+      mock.restore();
+    })
+  });
+
+  describe('Project has to throw a error if a combination of configurations is not complete', () => {
+    it('custom config is invalid', () => {
+      //We don't have a smithery and custom config
+      mock({
+        'test.config': `{}`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
+
+      assert.throws(() => { new Project({ configPath: 'test.config' }) }, `The used configuration for project "${process.cwd()}" is inclomplete.`);
+
+      mock.restore();
+    });
+
+    it('smithery.json is invalid', () => {
+      //We don't have a smithery and custom config
+      mock({
+        'smithery.json': `{}`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
+
+      assert.throws(() => { new Project() }, `The used configuration for project "${process.cwd()}" is inclomplete.`);
+
+      mock.restore();
+    });
+
+    it('direct config is invalid', () => {
+      //We don't have a smithery and custom config
+      mock({
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        }
+      });
+
+      assert.throws(() => { new Project({ projectFiles: 'features', configs: [{ name: 'default', features: ['base'] }] }) }, `The used configuration for project "${process.cwd()}" is inclomplete.`);
+
+      mock.restore();
+    });
+  });
+
+  it('Project should throw an error if th configs path is invalid', () => {
+    mock({
+      //let's name configurations in german
+      'test.config': `{
+        "model":"./model/model.xml",
+        "configs":"Konfigurationen",
+        "projectFiles":"features",
+        "buildFolder":"build"
+      }`,
+      'configurations': {
+        'default.config': 'Base'
+      },
+      'features': {
+        'Base': {
+          'README.md': 'TEST'
+        }
+      }
+    });
+
+    assert.throws(() => { new Project({ configPath: 'test.config' }) }, 'The build-configurations setup is not given properly');
+
+    mock.restore();
   });
 });

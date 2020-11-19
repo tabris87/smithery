@@ -49,7 +49,7 @@ export class Project {
         const cont = JSON.parse(readFileSync(join(this._workingDir, path), 'utf-8'));
         return { content: cont, exists: true };
       } else {
-        return { exists: false };
+        throw new Error(`The configuration "${path}" is not within the project folder!!`);
       }
     } else {
       return { exists: false };
@@ -132,8 +132,8 @@ export class Project {
       config.plugins = directConfig.content?.plugins || config.plugins;
       config.projectRules = directConfig.content?.projectRules || config.projectRules;
     }
-
-    if (config.configs === '' && config.buildFolder === '' && config.projectFiles === '') {
+    
+    if (typeof config.configs === 'undefined' || typeof config.buildFolder === 'undefined' || typeof config.projectFiles === 'undefined' || config.configs === '' || config.buildFolder === '' || config.projectFiles === '') {
       throw new Error(errorTextInvalidConfiguration);
     }
 

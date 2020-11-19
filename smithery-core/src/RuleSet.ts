@@ -8,10 +8,9 @@ export class RuleSet {
   private _rules: Rule[] = [];
 
   constructor(rules?: Rule[]) {
+    this._loadDefaultRules();
     if (rules && rules.length > 0) {
-      this._rules = rules;
-    } else {
-      this._loadDefaultRules();
+      this._rules = this._rules.concat(rules);
     }
   }
 
@@ -33,7 +32,8 @@ export class RuleSet {
   }
 
   public copy(): RuleSet {
-    return new RuleSet(this._rules);
+    //based on the constructor we can assume that the first rule is everytime the default rule
+    return new RuleSet(this._rules.slice(1, this._rules.length).map(r => r.copy()));
   }
 
   public limitToLanguage(lang: string = ''): void {

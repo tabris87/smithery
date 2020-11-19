@@ -13,6 +13,7 @@ declare type SelectorCheck = {
 }
 
 export class Rule {
+  private _setupParameter: IRule;
   private _targetNodes: string[];
   private _selector: string;
   private _selectorFeature: string;
@@ -21,12 +22,12 @@ export class Rule {
   private _resolveCallback: (baseFST: Node, featureFST: Node, context: Imposer) => Node;
 
   constructor(rule: IRule) {
+    this._setupParameter = rule;
+    this._targetNodes = [];
     if (Array.isArray(rule.target)) {
       this._targetNodes = rule.target;
     } else if (typeof rule.target === 'string') {
       this._targetNodes = [rule.target];
-    } else {
-      this._targetNodes = [];
     }
 
     this._selector = rule.selector;
@@ -49,6 +50,10 @@ export class Rule {
 
   public apply(baseFST: Node, featureFST: Node, context: Imposer): Node {
     return this._resolveCallback(baseFST, featureFST, context);
+  }
+
+  public copy(): Rule {
+    return new Rule(this._setupParameter);
   }
 
   private _setupSelector(selector: string): SelectorCheck[] {
