@@ -267,22 +267,18 @@ export class Project {
   }
 
   private _getConfigFiles(dirPath: string) {
-    if (existsSync(dirPath)) {
-      return readdirSync(dirPath)
-        .filter((fn) => fn.endsWith('.config'))
-        .map((config) => {
-          return {
-            name: config.replace(dirPath + '/', '').replace('.config', ''),
-            features: readFileSync(join(dirPath, config), { encoding: 'utf-8' })
-              .split(/\r?\n/)
-              .filter((sFeature) => {
-                return sFeature !== '';
-              }),
-          };
-        });
-    } else {
-      throw new Error('No config folder present, therefore no configs');
-    }
+    return readdirSync(dirPath)
+      .filter((fn) => fn.endsWith('.config'))
+      .map((config) => {
+        return {
+          name: config.replace(dirPath + '/', '').replace('.config', ''),
+          features: readFileSync(join(dirPath, config), { encoding: 'utf-8' })
+            .split(/\r?\n/)
+            .filter((sFeature) => {
+              return sFeature !== '';
+            }),
+        };
+      });
   }
 
   private _loadPlugin(plugin: IPlugin) {

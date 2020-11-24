@@ -269,4 +269,56 @@ describe('Scenario test for builds using different configurations', () => {
 
     mock.restore();
   });
+
+  it('Perform build of simple basic Base folder only', () => {
+    mock({
+      'build': {
+        'README.md': 'TEST',
+        'src': {
+          'main.js': 'console.log("HelloWorld");'
+        }
+      },
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'default.config': 'Base'
+      },
+      'features': {
+        'Base': {
+          'README.md': 'TEST'
+        }
+      }
+    })
+
+    const mkdirSyncStub = sinon.stub(fs, 'mkdirSync');
+    const writeFileSyncStub = sinon.stub(fs, 'writeFileSync');
+    const unlinkSyncSpy = sinon.spy(fs, 'unlinkSync');
+    const rmdirSyncSpy = sinon.spy(fs, 'rmdirSync');
+
+    const p = new Project();
+    p.build('default');
+
+    //first the build folder because this one is missing
+    //second call for the root folder
+    expect(mkdirSyncStub.calledOnce).to.be.true;
+    expect(mkdirSyncStub.calledWith(path.join(process.cwd(), 'build'))).to.be.true;
+
+    expect(writeFileSyncStub.calledOnce).to.be.true;
+    expect(writeFileSyncStub.calledWith('README.md', 'utf-8'));
+
+    expect(unlinkSyncSpy.calledTwice).to.be.true;
+    expect(unlinkSyncSpy.calledWith('README.md'));
+    expect(unlinkSyncSpy.calledWith('main.js'));
+
+    expect(rmdirSyncSpy.calledTwice).to.be.true;
+    expect(rmdirSyncSpy.calledWith('src'));
+    expect(rmdirSyncSpy.calledWith('build'));
+    mock.restore();
+    mkdirSyncStub.restore();
+    writeFileSyncStub.restore();
+  });
 });

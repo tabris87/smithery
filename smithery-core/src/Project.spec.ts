@@ -129,7 +129,85 @@ describe('Testing the Project class', () => {
 
       mock.restore();
     })
-  });
+  
+    it('Project should be able to instantiate by the smithery.json configuration with custom rules', () => {
+      mock({
+        'smithery.json': `{
+          "model":"./model/model.xml",
+          "configs":"configurations",
+          "projectFiles":"features",
+          "buildFolder":"build",
+          "projectRules": "custRules"
+        }`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        },
+        'custRules': {
+          'testRule.ts': `
+          import { IRule } from './Interfaces';
+          import { Node } from './utils/Node';
+          import { Imposer } from './Imposer';
+
+          export const rule: IRule = {
+            apply: (baseFST: Node, featureFST: Node, context: Imposer): Node => {
+              return new Node();
+            },
+            target: ['wat'],
+            selector: 'Blub > Bam Whatever Thinkof[att=val]',
+          };`
+        }
+      });
+
+      const p = new Project();
+      expect(p).not.to.be.undefined;
+
+      mock.restore();
+    });
+
+    it('Project should be able to instantiate by the smithery.json configuration with a single custom rule', () => {
+      mock({
+        'smithery.json': `{
+          "model":"./model/model.xml",
+          "configs":"configurations",
+          "projectFiles":"features",
+          "buildFolder":"build",
+          "projectRules": "custRules/testRule.ts"
+        }`,
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
+        },
+        'custRules': {
+          'testRule.ts': `
+          import { IRule } from './Interfaces';
+          import { Node } from './utils/Node';
+          import { Imposer } from './Imposer';
+
+          export const rule: IRule = {
+            apply: (baseFST: Node, featureFST: Node, context: Imposer): Node => {
+              return new Node();
+            },
+            target: ['wat'],
+            selector: 'Blub > Bam Whatever Thinkof[att=val]',
+          };`
+        }
+      });
+
+      const p = new Project();
+      expect(p).not.to.be.undefined;
+
+      mock.restore();
+    });
+    });
 
   describe('Project has to throw a error if a combination of configurations is not complete', () => {
     it('custom config is invalid', () => {
