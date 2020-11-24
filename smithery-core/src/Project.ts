@@ -132,7 +132,7 @@ export class Project {
       config.plugins = directConfig.content?.plugins || config.plugins;
       config.projectRules = directConfig.content?.projectRules || config.projectRules;
     }
-    
+
     if (typeof config.configs === 'undefined' || typeof config.buildFolder === 'undefined' || typeof config.projectFiles === 'undefined' || config.configs === '' || config.buildFolder === '' || config.projectFiles === '') {
       throw new Error(errorTextInvalidConfiguration);
     }
@@ -180,7 +180,7 @@ export class Project {
     this._configurationOptions = config;
   }
 
-  public build(configName: string): void {
+  public build(configName?: string): void {
     if (configName) {
       this.setConfig(configName);
     }
@@ -202,7 +202,7 @@ export class Project {
     console.log('building...');
     let aFeatures = this._config.features;
     if (!aFeatures.includes('Base')) {
-      throw new Error('No Base features set up, ');
+      throw new Error('No Base feature set up! Build not possible!');
     }
 
     // now we know the features contains base, therefore we can use it.
@@ -254,7 +254,7 @@ export class Project {
   }
 
   public setConfig(configName: string): void {
-    if (this._configs === null) {
+    if (this._configs === null || (Array.isArray(this._configs) && this._configs.length === 0)) {
       throw new Error('No configs given');
     }
 

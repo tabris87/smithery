@@ -1,5 +1,5 @@
 import { Project } from '../Project';
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 
 import * as sinon from 'sinon';
 
@@ -115,5 +115,158 @@ describe('Scenario test for builds using different configurations', () => {
     mock.restore();
     mkdirSyncStub.restore();
     writeFileSyncStub.restore();
+  });
+
+  it('Throw an error if no specific configuration is set and the default configuration is not present', () => {
+    mock({
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'one.config': 'Base\nOne'
+      },
+      'features': {
+        'Base': {
+          'README.md': 'TEST'
+        },
+        'One': {
+          'src': {
+            'main.js': 'function run() {console.log("running");}\n\nrun();'
+          }
+        }
+      }
+    });
+
+    const p = new Project();
+    assert.throws(() => { p.build() }, 'No configuration given, therefore no build possible!')
+
+    mock.restore();
+  });
+
+  it('Perform build of default if no configuration name is given', () => {
+    const backupWarn = console.warn;
+    const warnings: string[] = [];
+    mock({
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'default.config': 'Base'
+      },
+      'features': {
+        'Base': {
+          'README.md': 'TEST'
+        }
+      }
+    })
+
+    console.warn = (warning: string) => {
+      warnings.push(warning);
+    }
+
+    const mkdirSyncStub = sinon.stub(fs, 'mkdirSync');
+    const writeFileSyncStub = sinon.stub(fs, 'writeFileSync');
+
+    const p = new Project();
+    p.build();
+
+    //first the build folder because this one is missing
+    //second call for the root folder
+    expect(mkdirSyncStub.calledOnce).to.be.true;
+    expect(mkdirSyncStub.calledWith(path.join(process.cwd(), 'build'))).to.be.true;
+
+    expect(writeFileSyncStub.calledOnce).to.be.true;
+    expect(writeFileSyncStub.calledWith('README.md', 'utf-8'));
+    expect(warnings.includes('No configuration set, switching to default'));
+
+    mock.restore();
+    console.warn = backupWarn;
+    mkdirSyncStub.restore();
+    writeFileSyncStub.restore();
+  });
+
+  it('Throw an error if the base feature is missing from the used configuration', () => {
+    mock({
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'default.config': 'One',
+        'one.config': 'Base\nOne'
+      },
+      'features': {
+        'One': {
+          'src': {
+            'main.js': 'function run() {console.log("running");}\n\nrun();'
+          }
+        }
+      }
+    });
+
+    const p = new Project();
+    assert.throws(() => { p.build() }, 'No Base feature set up! Build not possible!')
+
+    mock.restore();
+  });
+
+  it('Throw an error if the base feature is missing from the features', () => {
+    mock({
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'default.config': 'Base',
+        'one.config': 'Base\nOne'
+      },
+      'features': {
+        'One': {
+          'src': {
+            'main.js': 'function run() {console.log("running");}\n\nrun();'
+          }
+        }
+      }
+    });
+
+    const p = new Project();
+    assert.throws(() => { p.build() }, 'Base feature is not at the source code, therefore we can not start')
+
+    mock.restore();
+  });
+
+  it('Throw an error if the feature to imply is not at the features', () => {
+    mock({
+      'smithery.json': `{
+                "model":"./model/model.xml",
+                "configs":"configurations",
+                "projectFiles":"features",
+                "buildFolder":"build"
+              }`,
+      'configurations': {
+        'default.config': 'Base',
+        'one.config': 'Base\nOne'
+      },
+      'features': {
+        'Base': {
+          'README.md': 'TEST'
+        }
+      }
+    });
+
+    const p = new Project();
+    assert.throws(() => { p.build('one') }, '[One] feature is not at the source code, stopped building')
+
+    mock.restore();
   });
 });
