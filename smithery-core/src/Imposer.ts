@@ -83,7 +83,7 @@ export class Imposer {
             }
 
             //remove the feature childs afterwards
-            childFeature.splice(childIndex[0], 1);
+            featureChilds.splice(childIndex[0], 1);
           }
 
           if (childFeature.length > 1) {

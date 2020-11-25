@@ -35,9 +35,8 @@ export class DirectoryGenerator implements IGenerator {
         }
         this._processFiles(oNode.children || [], join(sTargetPath, oNode.name !== 'root' ? oNode.name : ''));
       } else {
-        if (oNode.content && oNode.content !== '') {
-          writeFileSync(join(sTargetPath, oNode.name), oNode.content);
-        }
+        //we will write the file even if no content is provided!
+        writeFileSync(join(sTargetPath, oNode.name), oNode?.content || '');
       }
     }
   }

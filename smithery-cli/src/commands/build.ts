@@ -1,11 +1,9 @@
 import { Project } from 'smithery';
+import { version } from 'smithery/package.json';
 import { SmitheryCommand } from '../interfaces';
 
-function build(configName: string) {
-  if (!configName) {
-    console.log('No config name given, try to use the default config!\n');
-  }
-
+function build(configName?: string) {
+  console.log(`Starting Build with 'smithery' at version ${version}`);
   const oProject = new Project();
   oProject.build(configName);
 }
