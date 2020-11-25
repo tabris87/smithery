@@ -140,7 +140,6 @@ describe('Multiple errors within playground tests, for retest and correction pur
     });
 
     const p = new Project();
-    debugger;
     p.build('config2');
 
     expect(fs.existsSync('./build')).to.be.true;
