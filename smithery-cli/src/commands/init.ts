@@ -30,7 +30,7 @@ function setupProjectStructure(configs: {
       }
     })
   });
-};
+}
 
 function init(): void {
   const workingDir: string = process.cwd();
