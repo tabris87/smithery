@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Home</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="Imposer.html">Imposer</a></li><li><a href="Project.html">Project</a></li><li><a href="Rule.html">Rule</a></li></ul><h3>Global</h3><ul><li><a href="global.html#hasParent">hasParent</a></li><li><a href="global.html#isCallee">isCallee</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p></p>
+                    <h1>Home</h1>
+                </header>
+                
+
+
+
+    
+
+
+    <h3>smithery 0.2.1</h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>smithery</h1>
+<p><em><span style="color:red">--alpha release--</span></em></p>
+<p>The &quot;house&quot; of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.
+Currentyl <em>smithery</em> provides the tools to work with Feature Oriented Programming (FOP).
+Additionally the intention is to provide additional tools to work with feature models, configurations etc..</p>
+<!--
+## Installation smithery for testing
+``` npm install -g git+https://github.com/tabris87/featureCLI.git#master```
+-->
+<h2>Installation</h2>
+<pre class="prettyprint source lang-bash"><code>npm install -g smithery
+</code></pre>
+<p>or</p>
+<pre class="prettyprint source lang-bash"><code>npm install [--save-dev] smithery
+</code></pre>
+<h2>Usage</h2>
+<h3>As standalone tool</h3>
+<p>Currently you can use smithery from commandline as a standalone tool:</p>
+<pre class="prettyprint source lang-bash"><code>smith --help
+Usage: index [options] [command]
+
+Options:
+  -V, --version         output the version number
+  -h, --help            output usage information
+
+Commands:
+  init|I                Inititalize the project setup
+  build|B [configName]  Starts the build of your product by the given
+                        configuration, otherwise tries to use the
+                        default config
+</code></pre>
+<h3>As dependency</h3>
+<p><em>smithery</em> contains an api file, to create an easy access to the internals of smithery if you want to use parts of smithery within your own projects.
+There is an interface for:</p>
+<ul>
+<li>[The Project]: which is the class to collect and control all the other parts of <em>smithery</em> by a given configuration</li>
+<li>[The ParserFactory]: A collector for multiple parser instances to take out the right one depending on file types</li>
+<li>[The GeneratorFactory]: A collector for multiple generator instances to take out the right one depending on file types</li>
+<li>[The RuleSetFactory]: A collector for all rules used by the imposer to support the imposition for leaf nodes.</li>
+<li>[The Imposer]: The main class for the Feature Oriented Programming, handling the imposition by taking all the classes above, except the Project, and two Abstract Syntax Trees (AST).</li>
+</ul>
+<p><strong>USAGE:</strong></p>
+<pre class="prettyprint source lang-javascript"><code>const {
+    Project,
+    ParserFactory,
+    GeneratorFactory,
+    RuleSetFactory,
+    Imposer
+} = require('smithery');
+</code></pre>
+<h2>Documentation</h2>
+<p><em>Missing</em></p>
+<h2>Contribution</h2>
+<p><a href="https://github.com/tabris87/featureCLI/blob/master/docs/CONTRIBUTING.md"><em>Missing</em></a></p>
+<h2>API Documentation</h2>
+<p>[<em>Missing</em>]</p>
+<h2>License</h2>
+<p>This project is licensed under the Apache Software License, Version 2.0</p></article>
+    </section>
+
+
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
