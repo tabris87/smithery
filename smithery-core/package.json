@@ -13,9 +13,9 @@
     "test-debug": "npx mocha --inspect-brk -r ts-node/register \"src/**/*.spec.ts\"",
     "coverage": "npx nyc npm run test",
     "lint": "npx eslint . --ext .ts",
-    "lint-report": "npx eslint . --ext .ts -f node_modules/eslint-detailed-reporter/lib/detailed.js -o reports/lintingReport.html",
+    "lint-report": "npx eslint . --ext .ts -f node_modules/eslint-detailed-reporter/lib/detailed.js -o reports/lintingReport.html | exit 0",
     "format": "npx prettier --write \"src/**/*.ts\"",
-    "build": "node clean.js | npx tsc",
+    "build": "node clean.js & npx tsc",
     "pack": "npm run build & npm pack"
   },
   "files": [
