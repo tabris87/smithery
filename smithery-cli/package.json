@@ -32,7 +32,7 @@
     "chalk": "^4.1.0",
     "commander": "^6.1.0",
     "inquirer": "^7.3.3",
-    "smithery": "file:../smithery-core/smithery-0.4.4.tgz"
+    "smithery": "^0.4.4"
   },
   "devDependencies": {
     "@types/chai": "^4.2.13",
