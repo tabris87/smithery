@@ -7,7 +7,7 @@
     "url": "https://github.com/tabris87/smithery"
   },
   "bin": {
-    "smith": "bin/src/cli.js"
+    "smith": "bin/cli.js"
   },
   "files": [
     "bin"
