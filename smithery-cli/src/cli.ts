@@ -9,7 +9,7 @@ type PACKAGEJSON = {
 class SmitheryCLI {
   private packageJSON: PACKAGEJSON;
   constructor() {
-    this.packageJSON = require('../../package.json');
+    this.packageJSON = require('../package.json');
     this._setupOptions();
   }
 
