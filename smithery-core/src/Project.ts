@@ -18,6 +18,7 @@ type configurationOptions = {
   projectRules?: string;
   configs?: { name: string, features: string[] }[];
   plugins?: [];
+  exclude?: string | string[];
 };
 
 type internalConfig = {
@@ -25,7 +26,8 @@ type internalConfig = {
   buildFolder: string, //musthave
   projectFiles: string, //musthave
   plugins: IPlugin | IPlugin[],
-  projectRules: string | Rule[]
+  projectRules: string | Rule[],
+  exclude: string[]
 };
 
 export class Project {
@@ -84,14 +86,16 @@ export class Project {
         buildFolder: options?.buildFolder,
         projectFiles: options?.projectFiles,
         plugins: options?.plugins,
-        projectRules: options?.projectRules
+        projectRules: options?.projectRules,
+        exclude: options?.exclude
       },
       exists: options?.configs ||
         options?.buildFolder ||
         options?.projectFiles ||
         options?.projectFiles ||
         options?.plugins ||
-        options?.projectRules
+        options?.projectRules ||
+        options?.exclude
     }
 
     const errorTextSetup = `Failed to setup configuration for project at "${this._workingDir}".`;
@@ -106,15 +110,25 @@ export class Project {
       buildFolder: '', //musthave
       projectFiles: '', //musthave
       plugins: [],
-      projectRules: []
+      projectRules: [],
+      exclude: []
     }
 
     if (smithConfig.exists) {
-      config.configs = smithConfig.content?.configs;
-      config.buildFolder = smithConfig.content?.buildFolder;
-      config.projectFiles = smithConfig.content?.projectFiles;
-      config.plugins = smithConfig.content?.plugins;
-      config.projectRules = smithConfig.content?.projectRules;
+      config.configs = smithConfig.content?.configs ?? '';
+      config.buildFolder = smithConfig.content?.buildFolder ?? '';
+      config.projectFiles = smithConfig.content?.projectFiles ?? '';
+      config.plugins = smithConfig.content?.plugins ?? [];
+      config.projectRules = smithConfig.content?.projectRules ?? [];
+      if (smithConfig.content?.exclude) {
+        if (Array.isArray(smithConfig.content.exclude)) {
+          config.exclude = smithConfig.content.exclude;
+        } else {
+          config.exclude = [smithConfig.content.exclude];
+        }
+      } else {
+        config.exclude = [];
+      }
     }
 
     if (custConfig.exists) {
@@ -123,6 +137,15 @@ export class Project {
       config.projectFiles = custConfig.content?.projectFiles || config.projectFiles;
       config.plugins = custConfig.content?.plugins || config.plugins;
       config.projectRules = custConfig.content?.projectRules || config.projectRules;
+      if (custConfig.content?.exclude) {
+        if (Array.isArray(custConfig.content.exclude)) {
+          config.exclude = custConfig.content.exclude;
+        } else {
+          config.exclude = [custConfig.content.exclude];
+        }
+      } else {
+        config.exclude = [];
+      }
     }
 
     if (directConfig.exists) {
@@ -131,6 +154,15 @@ export class Project {
       config.projectFiles = directConfig.content?.projectFiles || config.projectFiles;
       config.plugins = directConfig.content?.plugins || config.plugins;
       config.projectRules = directConfig.content?.projectRules || config.projectRules;
+      if (directConfig.content?.exclude) {
+        if (Array.isArray(directConfig.content.exclude)) {
+          config.exclude = directConfig.content.exclude;
+        } else {
+          config.exclude = [directConfig.content.exclude];
+        }
+      } else {
+        config.exclude = [];
+      }
     }
 
     if (typeof config.configs === 'undefined' || typeof config.buildFolder === 'undefined' || typeof config.projectFiles === 'undefined' || config.configs === '' || config.buildFolder === '' || config.projectFiles === '') {
@@ -175,7 +207,9 @@ export class Project {
     this._projectAST =
       this._parserFactory
         .getParser(FileType.Folder)
-        ?.parse(join(this._workingDir, config.projectFiles)) || new Node();
+        ?.parse(join(this._workingDir, config.projectFiles), {
+          exclude: config.exclude
+        }) || new Node();
 
     this._configurationOptions = config;
   }
