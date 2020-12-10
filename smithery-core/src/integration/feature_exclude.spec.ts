@@ -155,4 +155,69 @@ describe('New feature "exclude" test', () => {
 
     mock.restore()
   });
+
+  it('Expect a successfull build for all files, together with excluded files from the build at the build folder', () => {
+    //creating the current setup of the playground repo 25.11.2020
+    mock({
+      //first the project files
+      'smithery.json': `{
+        "model":"./model/model.xml",
+        "configs":"configurations",
+        "projectFiles":"features",
+        "buildFolder":"build",
+        "exclude": "**/node_modules"
+      }`,
+      'README.md': ``,
+      '.gitignore': ``,
+      'model': {
+        //currently we won't use the model.xml, but we placed it here and the model.xml is empty also at the playground
+        'model.xml': ``
+      },
+      'configurations': {
+        'config1.config': 'Base\nfeature1',
+        'config2.config': 'Base\nfeature1\nfeature2',
+        'default.config': 'Base'
+      },
+      'features': {
+        'Base': {
+          'README.md': ''
+        },
+        'feature1': {
+          'folder_feature1': {}
+        },
+        'feature2': {
+          'folder_feature1': {
+            'file_subFeature1_feature2.txt': ''
+          },
+          'file_feature2.txt': ''
+        }
+      },
+      'build': {
+        'node_modules': {
+          'dep1': {},
+          'dep2': {},
+          'dep3': {}
+        },
+        'folder_feature1': {
+          'file_subFeature1_feature2.txt': ''
+        },
+        'file_feature2.txt': '',
+        'README.md': ''
+      }
+    });
+
+    const p = new Project();
+    expect(fs.existsSync('./build')).to.be.true;
+    expect(fs.existsSync(path.join('./build', 'node_modules'))).to.be.true;
+    p.build('config2');
+
+    expect(fs.existsSync('./build')).to.be.true;
+    expect(fs.existsSync(path.join('./build', 'node_modules'))).to.be.true;
+    expect(fs.existsSync(path.join('./build', 'README.md'))).to.be.true;
+    expect(fs.existsSync(path.join('./build', 'folder_feature1'))).to.be.true;
+    expect(fs.existsSync(path.join('./build', 'folder_feature1', 'file_subFeature1_feature2.txt'))).to.be.true;
+    expect(fs.existsSync(path.join('./build', 'file_feature2.txt'))).to.be.true;
+
+    mock.restore()
+  });
 });
