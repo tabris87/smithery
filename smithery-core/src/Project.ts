@@ -1,5 +1,6 @@
 import { lstatSync, existsSync, readFileSync, readdirSync, mkdirSync, unlinkSync, rmdirSync } from 'fs';
 import { join } from 'path';
+import * as pm from 'picomatch';
 
 import { RuleSet } from './RuleSet';
 import { GeneratorFactory } from './Generator';
@@ -276,9 +277,9 @@ export class Project {
     }
 
     // check if build target already exists and clear it
-    this._clearBuildTarget(join(this._workingDir, this._buildTarget));
+    const buildRemains: boolean = this._clearBuildTarget(join(this._workingDir, this._buildTarget));
     // create the build target newly
-    mkdirSync(join(this._workingDir, this._buildTarget));
+    if (!buildRemains) { mkdirSync(join(this._workingDir, this._buildTarget)); }
     this._generatorFactory.getGenerator(FileType.Folder)?.generate(resultFST, {
       filePath: join(this._workingDir, this._buildTarget),
     });
@@ -459,17 +460,43 @@ export class Project {
     }
   }
 
-  private _clearBuildTarget(buildPath: string): void {
-    if (existsSync(buildPath)) {
-      readdirSync(buildPath).forEach((file: string) => {
+  private _clearBuildTarget(buildPath: string): boolean {
+    const matcher = this._configurationOptions?.exclude ? pm(this._configurationOptions.exclude) : undefined;
+    //Firstly check if the buildPath is available
+    if (!existsSync(buildPath)) {
+      return false;
+    }
+
+    if (
+      //matcher is not defined
+      typeof matcher === 'undefined' ||
+      //matcher is defined, the buildpath exists and but the path is not excluded from build
+      //therefore the files have to been kept, because the developer copied them
+      typeof matcher !== 'undefined' && !matcher(buildPath)
+    ) {
+      const removalResult: boolean = readdirSync(buildPath).map((file: string) => {
         const curPath = join(buildPath, file);
         if (lstatSync(curPath).isDirectory()) {
-          this._clearBuildTarget(curPath);
+          return this._clearBuildTarget(curPath);
         } else {
-          unlinkSync(curPath);
+          //if there is no matcher defined we can remove the file directly otherwise the path don't have to fit to the exclude pattern
+          if (typeof matcher === 'undefined' || matcher && !matcher(curPath)) {
+            unlinkSync(curPath);
+            return false;
+          } else {
+            return true;
+          }
         }
-      });
-      rmdirSync(buildPath);
+      }).some((result: boolean) => result);
+
+      //we can remove the directory if it does not contain any unremovable content
+      if (!removalResult) {
+        rmdirSync(buildPath);
+      }
+      return removalResult;
+    } else {
+      // we can return because the matchers is present and says the build path should be ignored
+      return true;
     }
   }
 }
