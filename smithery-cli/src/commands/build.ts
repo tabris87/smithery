@@ -15,7 +15,7 @@ export class Build implements SmitheryCommand {
       .alias('B')
       .description('Starts the build of your product by the given configuration, otherwise tries to use the default config')
       .on('--help', function () {
-        console.log('\n', 'Examples:\n', '\n', '$fjs build config1\n', '$fjs build config1');
+        console.log('\n', 'Examples:\n', '\n', '$smith build config1\n', '$smith build config1');
       })
       .action(function (configName: string) {
         build(configName);
