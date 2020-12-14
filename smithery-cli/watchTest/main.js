@@ -27,6 +27,13 @@ fs.watch(dirName, { recursive: true }, (event, filename) => {
   if (typeof filename === 'undefined') { return; }
   if (fsWait) return;
   const eventPath = path.join(dirName, filename);
+
+  //used to check if a file was deleted, as well as subfiles/subfolder
+  if (event === 'rename' && !fs.existsSync(eventPath)) {
+    console.log(`File/Folder ${eventPath} deleted;`)
+    delete fileHashMap[eventPath];
+    return;
+  }
   const pathStat = fs.lstatSync(eventPath);
 
   //debouncing
