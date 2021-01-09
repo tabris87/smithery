@@ -1,6 +1,7 @@
 import { Project } from 'smithery';
 import { version } from 'smithery/package.json';
 import { SmitheryCommand } from '../interfaces';
+import { Watcher } from '../utils/Watcher';
 
 function build(configName?: string) {
   console.log(`Starting Build with 'smithery' at version ${version}`);
@@ -17,6 +18,7 @@ export class Build implements SmitheryCommand {
       .on('--help', function () {
         console.log('\n', 'Examples:\n', '\n', '$smith build config1\n', '$smith build config1');
       })
+      .option('-w', '--watch', 'enable watch mode')
       .action(function (configName: string) {
         build(configName);
       });

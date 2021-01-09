@@ -30,10 +30,6 @@ fs.watch(dirName, { recursive: true }, (event, filename) => {
 
   //used to check if a file was deleted, as well as subfiles/subfolder
   if (event === 'rename' && !fs.existsSync(eventPath)) {
-    //Linux sends the delete event multiple times 
-    //only checking for rename and not existing is not enough
-    //therefore we have to check if the path is within the fileHashMap
-    //if not, the file is already deleted
     if (typeof fileHashMap[eventPath] !== 'undefined') {
       console.log(`File/Folder ${eventPath} deleted;`)
       delete fileHashMap[eventPath];
@@ -89,13 +85,3 @@ fs.watch(dirName, { recursive: true }, (event, filename) => {
     }
   }
 });
-
-/*
-  rename:
-  * create
-  * delete
-  * rename fires 3 times, 2 times for create and delete 1 for content change
-
-  change:
-  * folder content changes
-*/
