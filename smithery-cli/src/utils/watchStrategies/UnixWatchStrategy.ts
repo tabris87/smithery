@@ -4,6 +4,7 @@ import { existsSync, lstatSync, readdirSync, readFileSync, watch as fsWatch } fr
 import { join as pJoin } from 'path';
 import { FSWatcher } from 'fs';
 import md5 from 'md5';
+import { EventEmitter } from 'events';
 
 export class UnixWatchStrategy {
   private fileHashes: { [key: string]: string } = {};
@@ -11,6 +12,7 @@ export class UnixWatchStrategy {
   private fsWait: boolean | NodeJS.Timeout = false;
   private rootFolder: string = '';
   private markerContainer: ContainerWatchMarker = new ContainerWatchMarker([]);
+  private emitter: EventEmitter = new EventEmitter();
 
   private indexing(filePath: string): boolean {
     if (existsSync(filePath)) {
@@ -46,10 +48,12 @@ export class UnixWatchStrategy {
       }
     } catch (_) {
       if (typeof this.fileHashes[eventPath] !== 'undefined') {
-        console.log(`File ${eventPath} deleted;`);
+        /* console.log(`File ${eventPath} deleted;`); */
+        this.emitter.emit('changed', { path: eventPath, reason: 'deleted', type: 'File' });
         delete this.fileHashes[eventPath];
       } else if (typeof this.folderSizes[eventPath] !== 'undefined') {
-        console.log(`Folder ${eventPath} deleted;`);
+        /* console.log(`Folder ${eventPath} deleted;`); */
+        this.emitter.emit('changed', { path: eventPath, reason: 'deleted', type: 'Folder' })
       }
       return;
     }
@@ -65,20 +69,24 @@ export class UnixWatchStrategy {
         //if it was created we have to create base information
         if (typeof this.folderSizes[eventPath] === 'undefined') {
           this.indexing(eventPath);
-          console.log(`Folder: ${eventPath} created.`);
+          /* console.log(`Folder: ${eventPath} created.`); */
+          this.emitter.emit('changed', { path: eventPath, reason: 'created', type: 'Folder' });
         } else {
           const curCount = readdirSync(eventPath).length;
           if (this.folderSizes[eventPath] !== curCount) {
             this.folderSizes[eventPath] = curCount;
             if (existsSync(eventPath)) {
-              console.log(`Folder: ${eventPath} changed.`);
+              /* console.log(`Folder: ${eventPath} changed.`); */
+              this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'Folder' });
             } else {
-              console.log(`Folder: ${eventPath} content deleted.`);
+              /* console.log(`Folder: ${eventPath} content deleted.`); */
+              this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'Folder' });
             }
           }
         }
       } else if (event === 'change') {
-        console.log(`event 'change' for folder ${eventPath} triggered`);
+        /* console.log(`event 'change' for folder ${eventPath} triggered`); */
+        this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'Folder' });
       }
     }
 
@@ -87,19 +95,22 @@ export class UnixWatchStrategy {
         if (typeof this.fileHashes[eventPath] !== 'undefined') {
           //it is deleted
           delete this.fileHashes[eventPath];
-          console.log(`File ${eventPath} deleted`);
+          /* console.log(`File ${eventPath} deleted`); */
+          this.emitter.emit('changed', { path: eventPath, reason: 'deleted', type: 'File' });
         } else {
           //it is created
 
           this.fileHashes[eventPath] = md5(readFileSync(eventPath));
-          console.log(`File ${eventPath} created`);
+          /* console.log(`File ${eventPath} created`); */
+          this.emitter.emit('changed', { path: eventPath, reason: 'created', type: 'File' });
         }
       }
       if (event === 'change') {
         const currentHash = md5(readFileSync(eventPath));
         if (this.fileHashes[eventPath] !== currentHash) {
           this.fileHashes[eventPath] = currentHash;
-          console.log(`File ${eventPath} changed`);
+          /* console.log(`File ${eventPath} changed`); */
+          this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'File' });
         }
       }
     }
@@ -109,10 +120,14 @@ export class UnixWatchStrategy {
     return fsWatch(folderPath, { recursive: true }, this.watching.bind(this));
   }
 
-  public execute(watchPath: string): IWatchMarker | undefined {
+  public stop(): void {
+    this.markerContainer.unsubscribe();
+    this.emitter.removeAllListeners();
+  }
+
+  public execute(watchPath: string): EventEmitter {
     this.rootFolder = watchPath;
     this.indexing(watchPath);
-    //@TODO: add unix implementation
-    return this.markerContainer;
+    return this.emitter;
   }
 }

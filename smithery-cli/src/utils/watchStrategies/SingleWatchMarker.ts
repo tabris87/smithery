@@ -2,6 +2,7 @@ import { FSWatcher } from 'fs';
 import { IWatchMarker } from '../IWatcher';
 
 export class SingleWatchMarker implements IWatchMarker {
+
   constructor(private watcher: FSWatcher) { }
 
   public getWatcher(): FSWatcher {

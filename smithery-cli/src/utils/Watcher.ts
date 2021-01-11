@@ -1,24 +1,44 @@
-import { IWatcher, IWatchMarker } from "./IWatcher";
+import { IWatcher } from "./IWatcher";
 import { UnixWatchStrategy } from "./watchStrategies/UnixWatchStrategy";
 import { WinWatchStrategy } from "./watchStrategies/WinWatchStrategy";
+import { EventEmitter } from 'events';
 
+export enum EventName {
+  changed = 'Changed'
+}
 export class Watcher implements IWatcher {
-  private watchMark: IWatchMarker | undefined;
+  private watcher: EventEmitter | undefined;
+  private informer: EventEmitter;
+  private unixWStr: UnixWatchStrategy;
+  private winWStr: WinWatchStrategy;
 
-  constructor(private unixWStr: UnixWatchStrategy, private winWStr: WinWatchStrategy) {
+  constructor() {
     this.unixWStr = new UnixWatchStrategy();
     this.winWStr = new WinWatchStrategy();
+    this.informer = new EventEmitter();
   }
 
-  watch(folderPath: string): IWatchMarker | undefined {
+  public watch(folderPath: string): EventEmitter {
     const os = process.platform;
     if (os === 'win32') {
-      this.watchMark = this.winWStr.execute(folderPath);
+      this.watcher = this.winWStr.execute(folderPath);
+      this.watcher.on(EventName.changed, (changeInfo: { path: string, reason: string, type: string }) => { this.informer.emit(EventName.changed, changeInfo.path); })
     } else if (os === 'linux') {
-      this.watchMark = this.unixWStr.execute(folderPath);
+      this.watcher = this.unixWStr.execute(folderPath);
+      this.watcher.on(EventName.changed, (changeInfo: { path: string, reason: string, type: string }) => { this.informer.emit(EventName.changed, changeInfo.path); })
     } else {
       throw new Error('unknown OS watch mode can not be supported');
     }
-    return;
+    return this.informer;
+  }
+
+  public stop(): void {
+    this.winWStr.stop();
+    this.unixWStr.stop();
+  }
+
+  public on(eventName: EventName, callback: (path: string) => void): EventEmitter {
+    if (eventName)
+      return this.informer.on(eventName, callback);
   }
 }

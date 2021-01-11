@@ -301,6 +301,10 @@ export class Project {
     this._config = oConfig[0];
   }
 
+  public getProjectRoot(): string {
+    return this._configurationOptions.projectFiles;
+  }
+
   private _getConfigFiles(dirPath: string) {
     return readdirSync(dirPath)
       .filter((fn) => fn.endsWith('.config'))
