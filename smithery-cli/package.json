@@ -1,6 +1,6 @@
 {
   "name": "smithery-cli",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "The cli interface for the smithery tooling",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
     "@typescript-eslint/parser": "^4.8.2",
     "chai": "^4.2.0",
     "concat-stream": "^2.0.0",
-    "eslint": "^7.14.0",
+    "eslint": "^7.17.0",
     "eslint-detailed-reporter": "^0.8.0",
     "md5": "^2.3.0",
     "mocha": "^8.1.3",

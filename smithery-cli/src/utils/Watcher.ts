@@ -37,8 +37,9 @@ export class Watcher implements IWatcher {
     this.unixWStr.stop();
   }
 
-  public on(eventName: EventName, callback: (path: string) => void): EventEmitter {
-    if (eventName)
+  public on(eventName: EventName, callback: (path: string) => void): EventEmitter | undefined {
+    if (eventName) {
       return this.informer.on(eventName, callback);
+    }
   }
 }

@@ -1,5 +1,7 @@
+import { EventEmitter } from 'events';
+
 export interface IWatcher {
-  watch(watchPath: string): IWatchMarker | undefined;
+  watch(watchPath: string): EventEmitter;
   stop(): void;
 }
 
