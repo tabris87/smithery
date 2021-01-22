@@ -1,3 +1,3 @@
 export interface SmitheryCommand {
-  prepare(prog: any): void;
+  prepare(commander: any, prog: any): void;
 }

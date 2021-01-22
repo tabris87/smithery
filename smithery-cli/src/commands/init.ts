@@ -97,8 +97,8 @@ function init(): void {
 }
 
 export class Init implements SmitheryCommand {
-  prepare(program: any): void {
-    program
+  prepare(commander: any, program: any): void {
+    commander
       .command('init')
       .alias('I')
       .description('Initialize the project setup')

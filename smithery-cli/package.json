@@ -1,6 +1,6 @@
 {
   "name": "smithery-cli",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "The cli interface for the smithery tooling",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "format": "npx prettier --write \"src/**/*.ts\"",
     "build": "node clean.js & npx tsc",
     "pack": "npm run build & npm pack",
-    "global-install": "npm uninstall -g smithery-cli & npm link"
+    "global-install": "npm build & npm uninstall -g smithery-cli & npm link"
   },
   "author": "Adrian Marten",
   "license": "Apache-2.0",
@@ -32,7 +32,7 @@
     "chalk": "^4.1.0",
     "commander": "^6.1.0",
     "inquirer": "^7.3.3",
-    "smithery": "file:../smithery-core/smithery-0.5.0.tgz"
+    "smithery": "^0.5.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.13",

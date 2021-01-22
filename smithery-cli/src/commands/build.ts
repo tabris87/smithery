@@ -18,8 +18,8 @@ function build(watch: boolean, configName?: string) {
 }
 
 export class Build implements SmitheryCommand {
-  prepare(program: any): void {
-    program
+  prepare(commander: any, program: any): void {
+    commander
       .command('build [configName]')
       .alias('B')
       .description('Starts the build of your product by the given configuration, otherwise tries to use the default config')

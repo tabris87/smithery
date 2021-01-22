@@ -14,9 +14,11 @@ class SmitheryCLI {
   }
 
   private _setupOptions() {
-    commander.program.version(this.packageJSON.version as string);
+    commander.program.version(this.packageJSON.version as string)
+      .description('CLI wrapper for the smithery tooling');
+
     commands.forEach(command => {
-      command.prepare(commander.program);
+      command.prepare(commander, commander.program);
     })/* 
     for (let key of Object.keys(this.commands)) {
       this.commands[key].createCommand(program);
