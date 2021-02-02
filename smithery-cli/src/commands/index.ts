@@ -1,4 +1,5 @@
 import { Init } from './init';
 import { Build } from './build';
+import { SmitheryCommand } from './SmitheryCommand.class';
 
-export const commands = [new Init(), new Build()];
+export const commands: SmitheryCommand[] = [];

@@ -21,7 +21,7 @@
     "format": "npx prettier --write \"src/**/*.ts\"",
     "build": "node clean.js & npx tsc",
     "pack": "npm run build & npm pack",
-    "global-install": "npm build & npm uninstall -g smithery-cli & npm link"
+    "global-install": "npm run build & npm uninstall -g smithery-cli & npm link"
   },
   "author": "Adrian Marten",
   "license": "Apache-2.0",

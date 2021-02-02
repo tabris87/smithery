@@ -1,4 +1,4 @@
-import { SmitheryCommand } from '../interfaces';
+import { SmitheryCommand } from './SmitheryCommand.class';
 
 import fs from 'fs';
 import path from 'path';
@@ -96,12 +96,15 @@ function init(): void {
     });
 }
 
-export class Init implements SmitheryCommand {
-  prepare(commander: any, program: any): void {
-    commander
-      .command('init')
-      .alias('I')
-      .description('Initialize the project setup')
-      .action(() => { init(); });
+export class Init extends SmitheryCommand {
+  constructor() {
+    super('Init');
+  }
+
+  public execute(cmdArguments?: string | string[], options?: { [key: string]: string | number | boolean; }): void {
+    throw new Error('Method not implemented.');
+  }
+  public showCommandHelp(): string {
+    throw new Error('Method not implemented.');
   }
 }
