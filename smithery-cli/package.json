@@ -27,10 +27,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@types/chalk": "^2.2.0",
-    "@types/commander": "^2.12.2",
     "@types/inquirer": "^7.3.1",
     "chalk": "^4.1.0",
-    "commander": "^6.1.0",
     "inquirer": "^7.3.3",
     "smithery": "^0.5.1"
   },

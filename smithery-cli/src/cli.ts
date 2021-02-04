@@ -20,7 +20,6 @@ class SmitheryCLI {
   }
 
   public run(argv: string[]): void {
-    console.log(argv.join('; '))
     const information = this.processCmdCall(argv);
     let matchingCMD;
     for (let com of this.commands) {
@@ -29,13 +28,13 @@ class SmitheryCLI {
       }
     }
 
-    console.log('---')
-    console.dir(information)
-    console.log('---')
-
     if (matchingCMD) {
-      matchingCMD.execute(information.argument, information.options);
-    } else if (information?.command.trim() === '' && (information.options?.v || information.options?.version)) {
+      try {
+        matchingCMD.execute(information.argument, information.options);
+      } catch (err) {
+        console.log(err);
+      }
+    } else if (information?.command?.trim() === '' && (information?.options?.v || information?.options?.version)) {
       const version = (this.packageJSON.version as string);
       const description = ('CLI wrapper for the smithery tooling');
       console.log(`smithery-cli ${version}\n${description}\nsmithery at version: ${smithVersion}`);
@@ -45,16 +44,27 @@ class SmitheryCLI {
   }
 
   private buildGlobalHelp(): string {
-    return 'PLEASE HELP ME!!!';
+    const version = (this.packageJSON.version as string);
+    const description = ('CLI wrapper for the smithery tooling');
+    const versionInfo = `smithery-cli ${version}\n${description}\nsmithery at version: ${smithVersion}`;
+    const parts: string[] = [
+      versionInfo,
+      '',
+      'smith <command> [arguments] [options]',
+      ''
+    ];
+    for (let co of commands) {
+      parts.push(co.getCommandShortHelp());
+    }
+
+    return parts.join('\n');
   }
 
   private processCmdCall(argv: string[]): { command: string, argument?: string | string[], options?: { [key: string]: boolean | string } } {
-    console.log(argv.join('; '))
     const result: { command: string, argument?: string | string[], options?: { [key: string]: boolean | string } } = { command: '' };
     let commandParts = argv.splice(2);
-    console.log(commandParts.join('; '))
     result.command = commandParts[0];
-    if (result.command.startsWith('-')) {
+    if (result.command && result.command.startsWith('-')) {
       result.command = '';
     } else {
       commandParts = commandParts.splice(1);

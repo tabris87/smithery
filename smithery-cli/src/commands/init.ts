@@ -32,79 +32,101 @@ function setupProjectStructure(configs: {
   });
 }
 
-function init(): void {
-  const workingDir: string = process.cwd();
-
-  if (fs.existsSync(path.join(workingDir, ".smithery"))) {
-    console.log(`\u001b[4m\u001B[33m'.smithery' config-file already exists. Generating structure:\u001b[0m`);
-    const configFile = JSON.parse(fs.readFileSync(path.join(workingDir, '.smithery'), 'utf-8'));
-    setupProjectStructure(configFile);
-    process.exit(0);
-  }
-
-  const questions = [{
-    type: 'input',
-    name: 'model',
-    message: 'Where should the model stored?',
-    default: './model.xml'
-  },
-  {
-    type: 'input',
-    name: 'configs',
-    message: 'Where should the configurations stored?',
-    default: 'configurations',
-  },
-  {
-    type: 'input',
-    name: 'projectFiles',
-    message: 'Where should the project files stored?',
-    default: 'features',
-    validate: function (input: string) {
-      if (input === "") {
-        return "You have to enter a valid path!";
-      } else {
-        return true;
-      }
-    }
-  },
-  {
-    type: 'input',
-    name: 'buildFolder',
-    message: 'Where should the build placed?',
-    default: 'build',
-    validate: function (input: string) {
-      if (input === "") {
-        return "You have to enter a valid path!";
-      } else {
-        return true;
-      }
-    }
-  }
-  ];
-
-  inquirer
-    .prompt(questions)
-    .then(function (answers) {
-      let sProjectConfig = JSON.stringify(answers);
-      sProjectConfig = sProjectConfig.replace(/,/g, ',\n\t');
-      sProjectConfig = sProjectConfig.replace(/\{/, '{\n\t');
-      sProjectConfig = sProjectConfig.replace(/\}/, '\n}');
-      fs.writeFileSync(path.join(workingDir, '.smithery'), sProjectConfig);
-
-      setupProjectStructure(answers);
-      process.exit(0);
-    });
-}
-
 export class Init extends SmitheryCommand {
   constructor() {
-    super('Init');
+    super('init');
   }
 
   public execute(cmdArguments?: string | string[], options?: { [key: string]: string | number | boolean; }): void {
-    throw new Error('Method not implemented.');
+
+    if (options?.help || options?.h) {
+      console.log(this.showCommandHelp());
+      return;
+    }
+
+    this.init();
   }
+
   public showCommandHelp(): string {
-    throw new Error('Method not implemented.');
+    const parts = [
+      'init [options]',
+      '',
+      'Options:',
+      '\thelp|h\t\tshows this help',
+      '',
+      'Examples:',
+      '\t$smith init',
+      '\t$smith init -h',
+      '\t$smith init --help'
+    ]
+    return parts.join('\n')
+  }
+
+  public getCommandShortHelp(): string {
+    return '\tinit\t\tinitialize the project folder for a new smithery project'
+  }
+
+  private init(): void {
+    const workingDir: string = process.cwd();
+
+    if (fs.existsSync(path.join(workingDir, ".smithery"))) {
+      console.log(`\u001b[4m\u001B[33m'.smithery' config-file already exists. Generating structure:\u001b[0m`);
+      const configFile = JSON.parse(fs.readFileSync(path.join(workingDir, '.smithery'), 'utf-8'));
+      setupProjectStructure(configFile);
+      process.exit(0);
+    }
+
+    const questions = [{
+      type: 'input',
+      name: 'model',
+      message: 'Where should the model stored?',
+      default: './model.xml'
+    },
+    {
+      type: 'input',
+      name: 'configs',
+      message: 'Where should the configurations stored?',
+      default: 'configurations',
+    },
+    {
+      type: 'input',
+      name: 'projectFiles',
+      message: 'Where should the project files stored?',
+      default: 'features',
+      validate: function (input: string) {
+        if (input === "") {
+          return "You have to enter a valid path!";
+        } else {
+          return true;
+        }
+      }
+    },
+    {
+      type: 'input',
+      name: 'buildFolder',
+      message: 'Where should the build placed?',
+      default: 'build',
+      validate: function (input: string) {
+        if (input === "") {
+          return "You have to enter a valid path!";
+        } else {
+          return true;
+        }
+      }
+    }
+    ];
+
+    inquirer
+      .prompt(questions)
+      .then(function (answers) {
+        let sProjectConfig = JSON.stringify(answers);
+        sProjectConfig = sProjectConfig.replace(/,/g, ',\n\t');
+        sProjectConfig = sProjectConfig.replace(/\{/, '{\n\t');
+        sProjectConfig = sProjectConfig.replace(/\}/, '\n}');
+        fs.writeFileSync(path.join(workingDir, '.smithery'), sProjectConfig);
+
+        setupProjectStructure(answers);
+        process.exit(0);
+      });
   }
 }
