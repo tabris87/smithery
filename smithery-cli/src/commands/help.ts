@@ -1,6 +1,5 @@
 import { SmitheryCommand } from './SmitheryCommand.class';
 import { commands } from './index';
-import { command } from 'commander';
 
 export class Help extends SmitheryCommand {
     constructor() {
