@@ -1,4 +1,4 @@
-import { IWatchMarker } from '../IWatcher';
+import { EventName } from '../IWatcher';
 import { ContainerWatchMarker } from './ContainerWatchMarker';
 import { existsSync, lstatSync, readdirSync, readFileSync, watch as fsWatch } from 'fs';
 import { join as pJoin } from 'path';
@@ -49,11 +49,11 @@ export class UnixWatchStrategy {
     } catch (_) {
       if (typeof this.fileHashes[eventPath] !== 'undefined') {
         /* console.log(`File ${eventPath} deleted;`); */
-        this.emitter.emit('changed', { path: eventPath, reason: 'deleted', type: 'File' });
+        this.emitter.emit(EventName.changed, { path: eventPath, reason: 'deleted', type: 'File' });
         delete this.fileHashes[eventPath];
       } else if (typeof this.folderSizes[eventPath] !== 'undefined') {
         /* console.log(`Folder ${eventPath} deleted;`); */
-        this.emitter.emit('changed', { path: eventPath, reason: 'deleted', type: 'Folder' })
+        this.emitter.emit(EventName.changed, { path: eventPath, reason: 'deleted', type: 'Folder' })
       }
       return;
     }
@@ -70,23 +70,23 @@ export class UnixWatchStrategy {
         if (typeof this.folderSizes[eventPath] === 'undefined') {
           this.indexing(eventPath);
           /* console.log(`Folder: ${eventPath} created.`); */
-          this.emitter.emit('changed', { path: eventPath, reason: 'created', type: 'Folder' });
+          this.emitter.emit(EventName.changed, { path: eventPath, reason: 'created', type: 'Folder' });
         } else {
           const curCount = readdirSync(eventPath).length;
           if (this.folderSizes[eventPath] !== curCount) {
             this.folderSizes[eventPath] = curCount;
             if (existsSync(eventPath)) {
               /* console.log(`Folder: ${eventPath} changed.`); */
-              this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'Folder' });
+              this.emitter.emit(EventName.changed, { path: eventPath, reason: 'changed', type: 'Folder' });
             } else {
               /* console.log(`Folder: ${eventPath} content deleted.`); */
-              this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'Folder' });
+              this.emitter.emit(EventName.changed, { path: eventPath, reason: 'changed', type: 'Folder' });
             }
           }
         }
       } else if (event === 'change') {
         /* console.log(`event 'change' for folder ${eventPath} triggered`); */
-        this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'Folder' });
+        this.emitter.emit(EventName.changed, { path: eventPath, reason: 'changed', type: 'Folder' });
       }
     }
 
@@ -96,13 +96,13 @@ export class UnixWatchStrategy {
           //it is deleted
           delete this.fileHashes[eventPath];
           /* console.log(`File ${eventPath} deleted`); */
-          this.emitter.emit('changed', { path: eventPath, reason: 'deleted', type: 'File' });
+          this.emitter.emit(EventName.changed, { path: eventPath, reason: 'deleted', type: 'File' });
         } else {
           //it is created
 
           this.fileHashes[eventPath] = md5(readFileSync(eventPath));
           /* console.log(`File ${eventPath} created`); */
-          this.emitter.emit('changed', { path: eventPath, reason: 'created', type: 'File' });
+          this.emitter.emit(EventName.changed, { path: eventPath, reason: 'created', type: 'File' });
         }
       }
       if (event === 'change') {
@@ -110,7 +110,7 @@ export class UnixWatchStrategy {
         if (this.fileHashes[eventPath] !== currentHash) {
           this.fileHashes[eventPath] = currentHash;
           /* console.log(`File ${eventPath} changed`); */
-          this.emitter.emit('changed', { path: eventPath, reason: 'changed', type: 'File' });
+          this.emitter.emit(EventName.changed, { path: eventPath, reason: 'changed', type: 'File' });
         }
       }
     }

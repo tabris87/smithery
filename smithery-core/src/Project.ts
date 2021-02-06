@@ -242,7 +242,7 @@ export class Project {
 
     // now we know the features contains base, therefore we can use it.
     // exclude base from the features to be applied.
-    aFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
+    let aBuildFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
 
     const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
     if (baseFST.length === 0) {
@@ -253,9 +253,9 @@ export class Project {
     resultFST.name = 'root';
     resultFST.featureName = 'BASE';
 
-    while (aFeatures.length > 0) {
+    while (aBuildFeatures.length > 0) {
       // Taking aFeatures like a queue
-      const curFeature = aFeatures.shift() || '';
+      const curFeature = aBuildFeatures.shift() || '';
       // tslint:disable-next-line: no-console
       console.log(`Imposing feature: ${curFeature}`);
       const featuresArray = this._projectAST?.children?.filter((oChild) => oChild.name === curFeature) || [];

@@ -8,3 +8,7 @@ export interface IWatcher {
 export interface IWatchMarker {
   unsubscribe(): void;
 }
+
+export enum EventName {
+  changed = 'changed'
+}

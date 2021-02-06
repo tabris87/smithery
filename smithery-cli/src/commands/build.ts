@@ -1,10 +1,8 @@
 import { Project } from 'smithery';
 import { version } from 'smithery/package.json';
 import { SmitheryCommand } from './SmitheryCommand.class';
-import { Watcher, EventName } from '../utils/Watcher';
-
-function build(config: string, options: any[], command: any) {
-}
+import { Watcher } from '../utils/Watcher';
+import { EventName } from '../utils/IWatcher';
 
 export class Build extends SmitheryCommand {
   constructor() {
@@ -16,7 +14,7 @@ export class Build extends SmitheryCommand {
       throw new Error('Only one Build-Configuration can be used for the build command!');
     }
 
-    if(!cmdArguments && (options?.help || options?.h)) {
+    if (!cmdArguments && (options?.help || options?.h)) {
       console.log(this.showCommandHelp());
       return;
     }

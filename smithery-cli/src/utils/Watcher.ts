@@ -1,11 +1,8 @@
-import { IWatcher } from "./IWatcher";
+import { IWatcher, EventName } from "./IWatcher";
 import { UnixWatchStrategy } from "./watchStrategies/UnixWatchStrategy";
 import { WinWatchStrategy } from "./watchStrategies/WinWatchStrategy";
 import { EventEmitter } from 'events';
 
-export enum EventName {
-  changed = 'Changed'
-}
 export class Watcher implements IWatcher {
   private watcher: EventEmitter | undefined;
   private informer: EventEmitter;
