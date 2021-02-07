@@ -32,7 +32,7 @@ export class Node {
   setAttribute(attName: string, value: number | string | boolean | number[] | boolean[] | string[]): void {
     this.attributes[attName] = value;
   }
-
+  
   public clone(): Node {
     const clone = new Node();
     clone.type = this.type;

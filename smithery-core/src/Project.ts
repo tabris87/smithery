@@ -204,14 +204,6 @@ export class Project {
       this._ruleSet.addMultipleRules(aProjectRules);
     }
 
-    // take the project file path from the options or from the readed config;
-    this._projectAST =
-      this._parserFactory
-        .getParser(FileType.Folder)
-        ?.parse(join(this._workingDir, config.projectFiles), {
-          exclude: config.exclude
-        }) || new Node();
-
     this._configurationOptions = config;
   }
 
@@ -244,12 +236,21 @@ export class Project {
     // exclude base from the features to be applied.
     let aBuildFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
 
+    //have to place it here, to always have a fresh copy of the filesystem
+    //maybe we need a more performant solution
+    this._projectAST =
+      this._parserFactory
+        .getParser(FileType.Folder)
+        ?.parse(join(this._workingDir, this._configurationOptions.projectFiles), {
+          exclude: this._configurationOptions.exclude
+        }) || new Node();
+
     const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
     if (baseFST.length === 0) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
 
-    let resultFST: Node | Node[] = baseFST[0];
+    let resultFST: Node | Node[] = baseFST[0].clone();
     resultFST.name = 'root';
     resultFST.featureName = 'BASE';
 
@@ -266,9 +267,6 @@ export class Project {
       const featureFST: Node = featuresArray[0];
       featureFST.name = 'root';
       featureFST.featureName = curFeature.toUpperCase();
-      /**
-       * @todo -> hier eine Lösung schaffen!!!
-       */
       resultFST = this._imposer.impose(
         resultFST,
         featureFST,
