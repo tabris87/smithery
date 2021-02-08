@@ -37,7 +37,7 @@ export class Project {
   private _config: null | { name: string; features: string[] } = null;
   private _buildTarget: string;
   private _plugins: IPlugin[] | null;
-  private _projectAST: Node;
+  private _projectAST: Node | undefined;
 
   private _ruleSet: RuleSet = new RuleSet();
   private _parserFactory: ParserFactory = new ParserFactory();
@@ -245,7 +245,7 @@ export class Project {
           exclude: this._configurationOptions.exclude
         }) || new Node();
 
-    const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
+    const baseFST: Node[] = this._projectAST.children?.filter((oChild) => oChild.name === 'Base') || [];
     if (baseFST.length === 0) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
@@ -259,7 +259,7 @@ export class Project {
       const curFeature = aBuildFeatures.shift() || '';
       // tslint:disable-next-line: no-console
       console.log(`Imposing feature: ${curFeature}`);
-      const featuresArray = this._projectAST?.children?.filter((oChild) => oChild.name === curFeature) || [];
+      const featuresArray = this._projectAST.children?.filter((oChild) => oChild.name === curFeature) || [];
       if (featuresArray.length === 0) {
         throw new Error(`[${curFeature}] feature is not at the source code, stopped building`);
       }
