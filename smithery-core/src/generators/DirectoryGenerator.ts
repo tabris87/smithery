@@ -2,7 +2,7 @@ import { IGenerator } from '../Interfaces';
 import { Node } from '../utils/Node';
 import { FileType } from '../enums';
 
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 /**
@@ -30,13 +30,15 @@ export class DirectoryGenerator implements IGenerator {
   private _processFiles(aNodesToProcess: Node[], sTargetPath: string) {
     for (const oNode of aNodesToProcess) {
       if (oNode.type === FileType.Folder) {
-        if (oNode.name !== 'root') {
+        if (oNode.name !== 'root' && !existsSync(join(sTargetPath, oNode.name))) {
           mkdirSync(join(sTargetPath, oNode.name));
         }
         this._processFiles(oNode.children || [], join(sTargetPath, oNode.name !== 'root' ? oNode.name : ''));
       } else {
         //we will write the file even if no content is provided!
-        writeFileSync(join(sTargetPath, oNode.name), oNode?.content || '');
+        if (!existsSync(join(sTargetPath, oNode.name))) {
+          writeFileSync(join(sTargetPath, oNode.name), oNode?.content || '');
+        }
       }
     }
   }

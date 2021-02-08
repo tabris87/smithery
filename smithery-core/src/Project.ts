@@ -1,5 +1,6 @@
 import { lstatSync, existsSync, readFileSync, readdirSync, mkdirSync, unlinkSync, rmdirSync } from 'fs';
 import { join } from 'path';
+import * as pm from 'picomatch';
 
 import { RuleSet } from './RuleSet';
 import { GeneratorFactory } from './Generator';
@@ -18,6 +19,7 @@ type configurationOptions = {
   projectRules?: string;
   configs?: { name: string, features: string[] }[];
   plugins?: [];
+  exclude?: string | string[];
 };
 
 type internalConfig = {
@@ -25,7 +27,8 @@ type internalConfig = {
   buildFolder: string, //musthave
   projectFiles: string, //musthave
   plugins: IPlugin | IPlugin[],
-  projectRules: string | Rule[]
+  projectRules: string | Rule[],
+  exclude: string[]
 };
 
 export class Project {
@@ -34,7 +37,7 @@ export class Project {
   private _config: null | { name: string; features: string[] } = null;
   private _buildTarget: string;
   private _plugins: IPlugin[] | null;
-  private _projectAST: Node;
+  private _projectAST: Node | undefined;
 
   private _ruleSet: RuleSet = new RuleSet();
   private _parserFactory: ParserFactory = new ParserFactory();
@@ -84,14 +87,16 @@ export class Project {
         buildFolder: options?.buildFolder,
         projectFiles: options?.projectFiles,
         plugins: options?.plugins,
-        projectRules: options?.projectRules
+        projectRules: options?.projectRules,
+        exclude: options?.exclude
       },
       exists: options?.configs ||
         options?.buildFolder ||
         options?.projectFiles ||
         options?.projectFiles ||
         options?.plugins ||
-        options?.projectRules
+        options?.projectRules ||
+        options?.exclude
     }
 
     const errorTextSetup = `Failed to setup configuration for project at "${this._workingDir}".`;
@@ -106,15 +111,25 @@ export class Project {
       buildFolder: '', //musthave
       projectFiles: '', //musthave
       plugins: [],
-      projectRules: []
+      projectRules: [],
+      exclude: []
     }
 
     if (smithConfig.exists) {
-      config.configs = smithConfig.content?.configs;
-      config.buildFolder = smithConfig.content?.buildFolder;
-      config.projectFiles = smithConfig.content?.projectFiles;
-      config.plugins = smithConfig.content?.plugins;
-      config.projectRules = smithConfig.content?.projectRules;
+      config.configs = smithConfig.content?.configs ?? '';
+      config.buildFolder = smithConfig.content?.buildFolder ?? '';
+      config.projectFiles = smithConfig.content?.projectFiles ?? '';
+      config.plugins = smithConfig.content?.plugins ?? [];
+      config.projectRules = smithConfig.content?.projectRules ?? [];
+      if (smithConfig.content?.exclude) {
+        if (Array.isArray(smithConfig.content.exclude)) {
+          config.exclude = smithConfig.content.exclude;
+        } else {
+          config.exclude = [smithConfig.content.exclude];
+        }
+      } else {
+        config.exclude = [];
+      }
     }
 
     if (custConfig.exists) {
@@ -123,6 +138,15 @@ export class Project {
       config.projectFiles = custConfig.content?.projectFiles || config.projectFiles;
       config.plugins = custConfig.content?.plugins || config.plugins;
       config.projectRules = custConfig.content?.projectRules || config.projectRules;
+      if (custConfig.content?.exclude) {
+        if (Array.isArray(custConfig.content.exclude)) {
+          config.exclude = custConfig.content.exclude;
+        } else {
+          config.exclude = [custConfig.content.exclude];
+        }
+      } else {
+        config.exclude = [];
+      }
     }
 
     if (directConfig.exists) {
@@ -131,6 +155,15 @@ export class Project {
       config.projectFiles = directConfig.content?.projectFiles || config.projectFiles;
       config.plugins = directConfig.content?.plugins || config.plugins;
       config.projectRules = directConfig.content?.projectRules || config.projectRules;
+      if (directConfig.content?.exclude) {
+        if (Array.isArray(directConfig.content.exclude)) {
+          config.exclude = directConfig.content.exclude;
+        } else {
+          config.exclude = [directConfig.content.exclude];
+        }
+      } else {
+        config.exclude = [];
+      }
     }
 
     if (typeof config.configs === 'undefined' || typeof config.buildFolder === 'undefined' || typeof config.projectFiles === 'undefined' || config.configs === '' || config.buildFolder === '' || config.projectFiles === '') {
@@ -171,12 +204,6 @@ export class Project {
       this._ruleSet.addMultipleRules(aProjectRules);
     }
 
-    // take the project file path from the options or from the readed config;
-    this._projectAST =
-      this._parserFactory
-        .getParser(FileType.Folder)
-        ?.parse(join(this._workingDir, config.projectFiles)) || new Node();
-
     this._configurationOptions = config;
   }
 
@@ -207,23 +234,32 @@ export class Project {
 
     // now we know the features contains base, therefore we can use it.
     // exclude base from the features to be applied.
-    aFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
+    let aBuildFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
 
-    const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
+    //have to place it here, to always have a fresh copy of the filesystem
+    //maybe we need a more performant solution
+    this._projectAST =
+      this._parserFactory
+        .getParser(FileType.Folder)
+        ?.parse(join(this._workingDir, this._configurationOptions.projectFiles), {
+          exclude: this._configurationOptions.exclude
+        }) || new Node();
+
+    const baseFST: Node[] = this._projectAST.children?.filter((oChild) => oChild.name === 'Base') || [];
     if (baseFST.length === 0) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
 
-    let resultFST: Node | Node[] = baseFST[0];
+    let resultFST: Node | Node[] = baseFST[0].clone();
     resultFST.name = 'root';
     resultFST.featureName = 'BASE';
 
-    while (aFeatures.length > 0) {
+    while (aBuildFeatures.length > 0) {
       // Taking aFeatures like a queue
-      const curFeature = aFeatures.shift() || '';
+      const curFeature = aBuildFeatures.shift() || '';
       // tslint:disable-next-line: no-console
       console.log(`Imposing feature: ${curFeature}`);
-      const featuresArray = this._projectAST?.children?.filter((oChild) => oChild.name === curFeature) || [];
+      const featuresArray = this._projectAST.children?.filter((oChild) => oChild.name === curFeature) || [];
       if (featuresArray.length === 0) {
         throw new Error(`[${curFeature}] feature is not at the source code, stopped building`);
       }
@@ -231,9 +267,6 @@ export class Project {
       const featureFST: Node = featuresArray[0];
       featureFST.name = 'root';
       featureFST.featureName = curFeature.toUpperCase();
-      /**
-       * @todo -> hier eine Lösung schaffen!!!
-       */
       resultFST = this._imposer.impose(
         resultFST,
         featureFST,
@@ -242,9 +275,9 @@ export class Project {
     }
 
     // check if build target already exists and clear it
-    this._clearBuildTarget(join(this._workingDir, this._buildTarget));
+    const buildRemains: boolean = this._clearBuildTarget(join(this._workingDir, this._buildTarget));
     // create the build target newly
-    mkdirSync(join(this._workingDir, this._buildTarget));
+    if (!buildRemains) { mkdirSync(join(this._workingDir, this._buildTarget)); }
     this._generatorFactory.getGenerator(FileType.Folder)?.generate(resultFST, {
       filePath: join(this._workingDir, this._buildTarget),
     });
@@ -264,6 +297,10 @@ export class Project {
     }
 
     this._config = oConfig[0];
+  }
+
+  public getProjectRoot(): string {
+    return this._configurationOptions.projectFiles;
   }
 
   private _getConfigFiles(dirPath: string) {
@@ -425,17 +462,43 @@ export class Project {
     }
   }
 
-  private _clearBuildTarget(buildPath: string): void {
-    if (existsSync(buildPath)) {
-      readdirSync(buildPath).forEach((file: string) => {
+  private _clearBuildTarget(buildPath: string): boolean {
+    const matcher = this._configurationOptions?.exclude ? pm(this._configurationOptions.exclude) : undefined;
+    //Firstly check if the buildPath is available
+    if (!existsSync(buildPath)) {
+      return false;
+    }
+
+    if (
+      //matcher is not defined
+      typeof matcher === 'undefined' ||
+      //matcher is defined, the buildpath exists and but the path is not excluded from build
+      //therefore the files have to been kept, because the developer copied them
+      typeof matcher !== 'undefined' && !matcher(buildPath)
+    ) {
+      const removalResult: boolean = readdirSync(buildPath).map((file: string) => {
         const curPath = join(buildPath, file);
         if (lstatSync(curPath).isDirectory()) {
-          this._clearBuildTarget(curPath);
+          return this._clearBuildTarget(curPath);
         } else {
-          unlinkSync(curPath);
+          //if there is no matcher defined we can remove the file directly otherwise the path don't have to fit to the exclude pattern
+          if (typeof matcher === 'undefined' || matcher && !matcher(curPath)) {
+            unlinkSync(curPath);
+            return false;
+          } else {
+            return true;
+          }
         }
-      });
-      rmdirSync(buildPath);
+      }).some((result: boolean) => result);
+
+      //we can remove the directory if it does not contain any unremovable content
+      if (!removalResult) {
+        rmdirSync(buildPath);
+      }
+      return removalResult;
+    } else {
+      // we can return because the matchers is present and says the build path should be ignored
+      return true;
     }
   }
 }

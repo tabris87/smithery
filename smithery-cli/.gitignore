@@ -1,4 +1,4 @@
 bin/
-
 smithery-cli-*.tgz
 reports
+node_modules/
