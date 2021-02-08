@@ -37,7 +37,7 @@ export class Project {
   private _config: null | { name: string; features: string[] } = null;
   private _buildTarget: string;
   private _plugins: IPlugin[] | null;
-  private _projectAST: Node;
+  private _projectAST: Node | undefined;
 
   private _ruleSet: RuleSet = new RuleSet();
   private _parserFactory: ParserFactory = new ParserFactory();
@@ -204,14 +204,6 @@ export class Project {
       this._ruleSet.addMultipleRules(aProjectRules);
     }
 
-    // take the project file path from the options or from the readed config;
-    this._projectAST =
-      this._parserFactory
-        .getParser(FileType.Folder)
-        ?.parse(join(this._workingDir, config.projectFiles), {
-          exclude: config.exclude
-        }) || new Node();
-
     this._configurationOptions = config;
   }
 
@@ -242,23 +234,32 @@ export class Project {
 
     // now we know the features contains base, therefore we can use it.
     // exclude base from the features to be applied.
-    aFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
+    let aBuildFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
 
-    const baseFST: Node[] = this._projectAST?.children?.filter((oChild) => oChild.name === 'Base') || [];
+    //have to place it here, to always have a fresh copy of the filesystem
+    //maybe we need a more performant solution
+    this._projectAST =
+      this._parserFactory
+        .getParser(FileType.Folder)
+        ?.parse(join(this._workingDir, this._configurationOptions.projectFiles), {
+          exclude: this._configurationOptions.exclude
+        }) || new Node();
+
+    const baseFST: Node[] = this._projectAST.children?.filter((oChild) => oChild.name === 'Base') || [];
     if (baseFST.length === 0) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
 
-    let resultFST: Node | Node[] = baseFST[0];
+    let resultFST: Node | Node[] = baseFST[0].clone();
     resultFST.name = 'root';
     resultFST.featureName = 'BASE';
 
-    while (aFeatures.length > 0) {
+    while (aBuildFeatures.length > 0) {
       // Taking aFeatures like a queue
-      const curFeature = aFeatures.shift() || '';
+      const curFeature = aBuildFeatures.shift() || '';
       // tslint:disable-next-line: no-console
       console.log(`Imposing feature: ${curFeature}`);
-      const featuresArray = this._projectAST?.children?.filter((oChild) => oChild.name === curFeature) || [];
+      const featuresArray = this._projectAST.children?.filter((oChild) => oChild.name === curFeature) || [];
       if (featuresArray.length === 0) {
         throw new Error(`[${curFeature}] feature is not at the source code, stopped building`);
       }
@@ -266,9 +267,6 @@ export class Project {
       const featureFST: Node = featuresArray[0];
       featureFST.name = 'root';
       featureFST.featureName = curFeature.toUpperCase();
-      /**
-       * @todo -> hier eine Lösung schaffen!!!
-       */
       resultFST = this._imposer.impose(
         resultFST,
         featureFST,
@@ -299,6 +297,10 @@ export class Project {
     }
 
     this._config = oConfig[0];
+  }
+
+  public getProjectRoot(): string {
+    return this._configurationOptions.projectFiles;
   }
 
   private _getConfigFiles(dirPath: string) {

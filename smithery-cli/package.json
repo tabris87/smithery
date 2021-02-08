@@ -1,6 +1,6 @@
 {
   "name": "smithery-cli",
-  "version": "0.3.4",
+  "version": "0.5.0",
   "description": "The cli interface for the smithery tooling",
   "repository": {
     "type": "git",
@@ -21,30 +21,31 @@
     "format": "npx prettier --write \"src/**/*.ts\"",
     "build": "node clean.js & npx tsc",
     "pack": "npm run build & npm pack",
-    "global-install": "npm uninstall -g smithery-cli & npm link"
+    "global-install": "npm run build & npm uninstall -g smithery-cli & npm link",
+    "prepublishOnly": "npm run build"
   },
   "author": "Adrian Marten",
   "license": "Apache-2.0",
   "dependencies": {
     "@types/chalk": "^2.2.0",
-    "@types/commander": "^2.12.2",
     "@types/inquirer": "^7.3.1",
     "chalk": "^4.1.0",
-    "commander": "^6.1.0",
     "inquirer": "^7.3.3",
-    "smithery": "^0.4.4"
+    "smithery": "^0.5.2"
   },
   "devDependencies": {
     "@types/chai": "^4.2.13",
     "@types/concat-stream": "^1.6.0",
+    "@types/md5": "^2.2.1",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.11.8",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "chai": "^4.2.0",
     "concat-stream": "^2.0.0",
-    "eslint": "^7.14.0",
+    "eslint": "^7.17.0",
     "eslint-detailed-reporter": "^0.8.0",
+    "md5": "^2.3.0",
     "mocha": "^8.1.3",
     "mochawesome": "^6.1.1",
     "typescript": "^4.0.3"
