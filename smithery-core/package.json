@@ -24,7 +24,7 @@
   ],
   "main": "lib/api.js",
   "dependencies": {
-    "css-what": "^3.3.0",
+    "css-what": "^5.0.1",
     "picomatch": "^2.2.2"
   },
   "devDependencies": {
