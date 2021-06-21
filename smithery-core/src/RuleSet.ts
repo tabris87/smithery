@@ -1,7 +1,7 @@
 import { IRule } from './Interfaces';
-import { Node } from './utils/Node';
 import { fileImpose } from './rules';
 import { Rule } from './Rule';
+import { FSTNode } from './utils/FSTNode';
 
 export class RuleSet {
   private _languageLimit: string = '';
@@ -40,7 +40,7 @@ export class RuleSet {
     this._languageLimit = lang;
   }
 
-  public getMatchingRule(baseFST: Node, featureFST: Node): Rule | undefined {
+  public getMatchingRule(baseFST: FSTNode, featureFST: FSTNode): Rule | undefined {
     let aUsageRules = this._rules;
     if (this._languageLimit !== '') {
       aUsageRules = aUsageRules.filter((rule) => rule.supportsLanguage(this._languageLimit));

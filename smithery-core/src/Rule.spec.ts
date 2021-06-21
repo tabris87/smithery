@@ -9,13 +9,14 @@ import { ParserFactory } from './Parser';
 
 import { Rule } from './Rule';
 import { IRule } from './Interfaces';
-import { Node } from './utils/Node';
+import { FSTNode } from './utils/FSTNode';
+import { FSTTerminal } from './utils/FSTTerminal';
 
 describe('Check the Rule Class', () => {
   it('A Rule should be build up just by providing simple information', () => {
     const ruleSetup: IRule = {
-      apply: (_: Node, __: Node, ___: Imposer) => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer) => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test'
@@ -26,8 +27,8 @@ describe('Check the Rule Class', () => {
 
   it('A rule should provide correctly witch language it supports, either normal written, uppercase, lowercase', () => {
     const ruleSetup: IRule = {
-      apply: (_: Node, __: Node, ___: Imposer) => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer) => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test'
@@ -41,10 +42,10 @@ describe('Check the Rule Class', () => {
     expect(rule.supportsLanguage('Whatsoever')).not.to.be.true;
   });
 
-  it('A rule states if it fits to a node combination', () => {
+  it('A rule states if it fits to a FSTNode combination', () => {
     const ruleSetup: IRule = {
-      apply: (_: Node, __: Node, ___: Imposer) => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer) => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test'
@@ -52,22 +53,19 @@ describe('Check the Rule Class', () => {
     const rule = new Rule(ruleSetup);
 
     //setting up the nodes
-    const baseNode = new Node();
-    const featureNode = new Node();
-    baseNode.path = 'test';
-    featureNode.path = 'test';
+    const baseNode = new FSTTerminal('', '');
+    const featureNode = new FSTTerminal('', '');
 
     expect(rule.isMatching(baseNode, featureNode)).to.be.true;
 
     //change the combination of nodes
-    featureNode.path = 'test2';
     expect(rule.isMatching(baseNode, featureNode)).to.be.false;
   });
 
   it('A rule states if it fits to a node combination, extended by node properties', () => {
     const ruleSetup: IRule = {
-      apply: (base: Node, feature: Node, context: Imposer) => {
-        return new Node();
+      apply: (base: FSTNode, feature: FSTNode, context: Imposer) => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test[wat]',
@@ -76,19 +74,15 @@ describe('Check the Rule Class', () => {
     const rule = new Rule(ruleSetup);
 
     //setting up the nodes
-    const baseNode = new Node();
-    const featureNode = new Node();
-    baseNode.path = 'test';
-    featureNode.path = 'test';
-    baseNode.setAttribute('wat', 'foo');
-    featureNode.setAttribute('wat', 'foo');
+    const baseNode = new FSTTerminal('', '');
+    const featureNode = new FSTTerminal('', '');
     expect(rule.isMatching(baseNode, featureNode)).to.be.true;
   });
 
   it('A rule states if it fits to a node combination, and is apply to apply the solution', () => {
     const ruleSetup: IRule = {
-      apply: (base: Node, feature: Node, context: Imposer) => {
-        return new Node();
+      apply: (base: FSTNode, feature: FSTNode, context: Imposer) => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test[wat]',
@@ -97,12 +91,8 @@ describe('Check the Rule Class', () => {
     const rule = new Rule(ruleSetup);
 
     //setting up the nodes
-    const baseNode = new Node();
-    const featureNode = new Node();
-    baseNode.path = 'test';
-    featureNode.path = 'test';
-    baseNode.setAttribute('wat', 'foo');
-    featureNode.setAttribute('wat', 'foo');
+    const baseNode = new FSTTerminal('', '');
+    const featureNode = new FSTTerminal('', '');
     expect(rule.isMatching(baseNode, featureNode)).to.be.true;
     expect(rule.apply).to.be.not.undefined;
 

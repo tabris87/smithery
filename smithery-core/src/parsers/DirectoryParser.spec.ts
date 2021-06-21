@@ -1,25 +1,24 @@
 //setting up the testenvironment
 import { expect } from 'chai';
 import 'mocha';
-import { stub } from 'sinon';
+import { assert, stub } from 'sinon';
 
 //import stuff to test
 import { DirectoryParser } from './DirectoryParser';
 import { FileType } from '../enums';
 import * as fs from 'fs';
+import * as path from 'path';
+import { FSTTerminal } from '../utils/FSTTerminal';
+import { FSTNonTerminal } from '../utils/FSTNonTerminal';
 
 
-describe('Check if the Directory Parser correctly parses file systems into the espree AST', () => {
-  it('Check the correct visitor keys', () => {
+describe('Check if the Directory Parser correctly parses file systems into the FST', () => {
+  it('Check the correct creation without any information', () => {
     const dp = new DirectoryParser();
     expect(dp).to.be.not.undefined;
-    expect(dp.getVisitorKeys()).to.be.eql({
-      Folder: ['children'],
-      File: []
-    });
   });
 
-  it('Check a single file to be parsed into the AST representation', () => {
+  it('Check a single file to be parsed into the FST representation', () => {
     const lstatSyncStub = stub(fs, 'lstatSync');
     lstatSyncStub.returns({
       isFile: () => true,
@@ -53,16 +52,21 @@ describe('Check if the Directory Parser correctly parses file systems into the e
     readFileSyncStub.returns('This is the correct File content');
 
     const dp = new DirectoryParser();
-    const ast = dp.parse('testPath');
-    expect(ast).not.to.be.undefined;
-    expect(ast.type).to.be.equal(FileType.File);
-    expect(ast.content).to.be.equal('This is the correct File content');
+    const fst = dp.parse('testPath');
+    expect(fst).not.to.be.undefined;
+
+    expect(fst.getName()).to.be.equal("testPath");
+    expect(fst.getParent()).to.be.undefined;
+    expect(fst.getType()).to.be.equal(FileType.File);
+
+    //now check the most important the node type !
+    expect(fst instanceof FSTTerminal).to.be.true;
 
     readFileSyncStub.restore();
     lstatSyncStub.restore();
   });
 
-  it('Check one folder one subfile to AST production', () => {
+  it('Check one folder one subfile to FST production', () => {
     const lstatSyncStub = stub(fs, 'lstatSync');
     lstatSyncStub.onFirstCall()
       .returns({
@@ -120,19 +124,30 @@ describe('Check if the Directory Parser correctly parses file systems into the e
       });
 
     const readFileSyncStub = stub(fs, 'readFileSync');
-    readFileSyncStub.returns('This is the correct File content');
+    const fileContent = 'This is the correct File content';
+    readFileSyncStub.returns(fileContent);
 
     const readdirSyncStub = stub(fs, 'readdirSync');
     readdirSyncStub.onFirstCall().returns(['testFile']);
 
     const dp = new DirectoryParser();
-    const ast = dp.parse('testPath');
-    expect(ast).not.to.be.undefined;
-    expect(ast.type).to.be.equal(FileType.Folder);
-    expect(ast.children).not.to.be.undefined;
-    expect(ast.children ? ast.children[0] : undefined).not.to.be.undefined;
-    expect(ast.children ? ast.children[0].type : 'FalseType').to.be.equal(FileType.File);
-    expect(ast.children ? ast.children[0].content : 'FalseContent').to.be.equal('This is the correct File content');
+    const fst = dp.parse('testPath');
+    expect(fst).not.to.be.undefined;
+
+    expect(fst.getName()).to.be.equal("testPath");
+    expect(fst.getParent()).to.be.undefined;
+    expect(fst.getType()).to.be.equal(FileType.Folder);
+
+    //now check the most important the node type !
+    expect(fst instanceof FSTNonTerminal).to.be.true;
+
+    //check the children
+    expect((fst as FSTNonTerminal).getChildren().length).to.be.equal(1);
+    expect((fst as FSTNonTerminal).getChildAt(0) instanceof FSTTerminal).to.be.true;
+    const firstChild = (fst as FSTNonTerminal).getChildAt(0);
+    expect(firstChild?.getName()).to.be.equal(path.join('testPath', 'testFile'));
+    expect(firstChild?.getType()).to.be.equal(FileType.File);
+    expect((firstChild as FSTTerminal).getContent()).to.be.equal(fileContent);
 
     lstatSyncStub.restore();
     readFileSyncStub.restore();

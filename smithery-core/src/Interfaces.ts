@@ -1,20 +1,16 @@
-import { Node } from './utils/Node';
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Imposer } from './Imposer';
+import { FSTNode } from './utils/FSTNode';
+
 export interface IGenerator {
-  generate(oAST: { [key: string]: any }, options?: { [key: string]: any }): string;
-  [key: string]: any;
+  generate(fst: FSTNode, options?: { [key: string]: unknown }): string;
 }
 
 export interface IParser {
-  parse(content: string, options?: { [key: string]: any }): Node;
-  getVisitorKeys(): { [key: string]: string[] };
-  [key: string]: any;
+  parse(content: string, options?: { [key: string]: unknown }): FSTNode;
 }
 
-import { Imposer } from './Imposer';
-
 export interface IRule {
-  apply: (baseFST: Node, featureFST: Node, context: Imposer) => Node;
+  apply: (baseFST: FSTNode, featureFST: FSTNode, context: Imposer) => FSTNode;
   target: string | string[];
   selector: string;
   selectorFeature?: string;

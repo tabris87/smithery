@@ -7,7 +7,6 @@ import { GeneratorFactory } from './Generator';
 import { ParserFactory } from './Parser';
 import { Imposer } from './Imposer';
 import { IPlugin, IRule } from './Interfaces';
-import { Node } from './utils/Node';
 import { Rule } from './Rule';
 
 import { FileType } from './enums';
@@ -208,7 +207,7 @@ export class Project {
   }
 
   public build(configName?: string): void {
-    if (configName) {
+    /* if (configName) {
       this.setConfig(configName);
     }
 
@@ -283,7 +282,7 @@ export class Project {
     });
 
     // tslint:disable-next-line: no-console
-    console.log('Build done. -> Have fun.');
+    console.log('Build done. -> Have fun.'); */
   }
 
   public setConfig(configName: string): void {
@@ -333,7 +332,7 @@ export class Project {
         if (plugin.config && plugin.config.parser) {
           Object.keys(plugin.config.parser).forEach((key) => {
             const setter = `set${this._capitalize(key)}`;
-            if (module !== undefined && typeof module.parser.parser[setter] !== 'undefined') {
+            /* if (module !== undefined && typeof module.parser.parser[setter] !== 'undefined') {
               if (plugin.config?.parser) {
                 this._invokeFunktion(module.parser.parser, setter, plugin.config?.parser[key]);
               }
@@ -341,7 +340,7 @@ export class Project {
               // Log.warn(`\nNo suitable setter for configuration ${sKey} found. Will be ignored!!`)
               // tslint:disable-next-line: no-console
               console.log(`\nNo suitable setter for configuration ${key} found. Will be ignored!!`);
-            }
+            } */
           });
         }
 
@@ -361,7 +360,7 @@ export class Project {
           if (plugin.config && plugin.config.generator) {
             Object.keys(plugin.config.generator).forEach((sKey) => {
               const setter = `set${this._capitalize(sKey)}`;
-              if (typeof module?.generator.generator[setter] !== 'undefined') {
+              /* if (typeof module?.generator.generator[setter] !== 'undefined') {
                 if (plugin.config?.generator) {
                   this._invokeFunktion(module.generator.generator, setter, plugin.config.generator[sKey]);
                 }
@@ -369,7 +368,7 @@ export class Project {
                 // Log.warn(`\nNo suitable setter for configuration ${sKey} found. Will be ignored!!`)
                 // tslint:disable-next-line: no-console
                 console.log(`\nNo suitable setter for configuration ${sKey} found. Will be ignored!!`);
-              }
+              } */
             });
           }
           if (Array.isArray(module.generator.fileEnding)) {

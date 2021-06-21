@@ -1,37 +1,25 @@
 import { IParser } from '../Interfaces';
-import { Node } from '../utils/Node';
 import { FileType } from '../enums';
 
 import { lstatSync, readdirSync, readFileSync } from 'fs';
-import { join, extname, basename } from 'path';
+import { join } from 'path';
 import * as pm from 'picomatch';
+import { FSTNode } from '../utils/FSTNode';
+import { FSTNonTerminal } from '../utils/FSTNonTerminal';
+import { FSTTerminal } from '../utils/FSTTerminal';
 
 export class DirectoryParser implements IParser {
-  private static visitorKeys: { [key: string]: string[] } = {
-    Folder: ['children'],
-    File: []
-  };
-
-  parse(sFilePath: string, options?: { parent?: Node, exclude?: string[] }): Node {
+  parse(sFilePath: string, options?: { parent?: FSTNonTerminal, exclude?: string[] }): FSTNode {
     const route = sFilePath || '.';
     const stats = lstatSync(route);
-    const oToken = new Node();
 
-    oToken.name = basename(route);
-    oToken.sourcePath = route;
+    const name: string = sFilePath;
+    let type: string = "";
 
     if (stats.isDirectory()) {
-      oToken.type = FileType.Folder;
+      type = FileType.Folder;
     } else {
-      oToken.type = FileType.File;
-    }
-
-    if (options?.parent) {
-      oToken.path = options?.parent?.path !== '' ? `${options.parent.path}.${oToken.type}` : oToken.type;
-      oToken.parent = options?.parent;
-    } else {
-      oToken.path = '';
-      oToken.parent = undefined;
+      type = FileType.File;
     }
 
     let exclMatcher: (test: string) => boolean;
@@ -44,20 +32,21 @@ export class DirectoryParser implements IParser {
     //current assumption is that only direct childs should be excluded
     //otherwise an incomplete node will be created
     if (stats.isDirectory()) {
-      oToken.children = readdirSync(route).filter((child: string) => {
+      const node = new FSTNonTerminal(type, name);
+
+      const children = readdirSync(route).filter((child: string) => {
         return !exclMatcher(join(route, child));
       }).map((child: string) => {
-        return this.parse(join(route, child), { parent: oToken, exclude: options?.exclude });
+        return this.parse(join(route, child), { parent: node, exclude: options?.exclude });
       });
+      node.addChildren(children);
+      if (options?.parent) {
+        node.setParent(options?.parent);
+      }
+      return node;
     } else {
-      oToken.ending = extname(route).replace('.', '').toUpperCase();
-      oToken.content = readFileSync(route, { encoding: 'utf-8' });
+      const content = readFileSync(route, { encoding: 'utf-8' });
+      return new FSTTerminal(type, name, content);
     }
-
-    return oToken;
-  }
-
-  getVisitorKeys(): { [key: string]: string[] } {
-    return DirectoryParser.visitorKeys;
   }
 }

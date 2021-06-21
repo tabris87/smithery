@@ -1,7 +1,7 @@
 import * as cssWhat from 'css-what';
 import { IRule } from './Interfaces';
-import { Node } from './utils/Node';
 import { Imposer } from './Imposer';
+import { FSTNode } from './utils/FSTNode';
 
 declare type ExtendedSelector = cssWhat.Selector & { level: number, name?: string, action?: string, attributes?: ExtendedSelector[] };
 
@@ -19,7 +19,7 @@ export class Rule {
   private _selectorFeature: string;
   private _baseChecks: SelectorCheck[];
   private _featureChecks: SelectorCheck[];
-  private _resolveCallback: (baseFST: Node, featureFST: Node, context: Imposer) => Node;
+  private _resolveCallback: (baseFST: FSTNode, featureFST: FSTNode, context: Imposer) => FSTNode;
 
   constructor(rule: IRule) {
     this._setupParameter = rule;
@@ -41,14 +41,14 @@ export class Rule {
     return this._targetNodes.find((tar: string) => tar.toLowerCase() === lang.toLowerCase()) !== undefined;
   }
 
-  public isMatching(baseFST: Node, featureFST: Node): boolean {
+  public isMatching(baseFST: FSTNode, featureFST: FSTNode): boolean {
     // check if the path contains the correct form for the css selector
     const result: boolean =
       this._checkNodeMatching(baseFST, this._baseChecks) && this._checkNodeMatching(featureFST, this._featureChecks);
     return result;
   }
 
-  public apply(baseFST: Node, featureFST: Node, context: Imposer): Node {
+  public apply(baseFST: FSTNode, featureFST: FSTNode, context: Imposer): FSTNode {
     return this._resolveCallback(baseFST, featureFST, context);
   }
 
@@ -183,20 +183,18 @@ export class Rule {
     };
   }
 
-  private _checkNodeMatching(node: Node, checks: SelectorCheck[]) {
+  private _checkNodeMatching(node: FSTNode, checks: SelectorCheck[]) {
     return checks.some((check) => this._singleNodeCheck(node, check));
   }
 
-  private _singleNodeCheck(node: Node, check: SelectorCheck): boolean {
-    if (node.path && check.pathRegex.exec(node.path) !== null) {
+  private _singleNodeCheck(node: FSTNode, check: SelectorCheck): boolean {
+    /* if (node.path && check.pathRegex.exec(node.path) !== null) {
       // check if the properties or the properties of the parents match the css selector
       if (Object.keys(check.propertyChecks).length > 0) {
         // check bottom to top
         const checkKeys: string[] = Object.keys(check.propertyChecks).slice().reverse();
-        let latestNode: Node = node;
+        let latestNode: FSTNode = node;
         for (const index of checkKeys) {
-          /* 0: {type: "tag", name: "file"} 
-             1: {type: "attribute", name: "ending", action: "exists", value: "", ignoreCase: false} */
           const checkProp = check.propertyChecks[parseInt(index, 10)];
           // iterate upwards until we found the correct one or the root node
           while (latestNode.type !== check.name && latestNode.parent) {
@@ -232,7 +230,8 @@ export class Rule {
       }
     } else {
       return false;
-    }
+    } */
+    return true;
   }
 
   private _attributeFits(nodeAtt: string, expectedValue: string): boolean {

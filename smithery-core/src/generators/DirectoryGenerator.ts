@@ -1,9 +1,11 @@
 import { IGenerator } from '../Interfaces';
-import { Node } from '../utils/Node';
-import { FileType } from '../enums';
 
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { FSTNode } from '../utils/FSTNode';
+import { FSTNonTerminal } from '../utils/FSTNonTerminal';
+import { FSTTerminal } from '../utils/FSTTerminal';
+import { FileType } from '../enums';
 
 /**
  * Implementation of the Generator interface to generate files and directories
@@ -12,11 +14,11 @@ export class DirectoryGenerator implements IGenerator {
   /**
    * @override
    */
-  public generate(oAST: Node, options?: { filePath: string }): string {
+  public generate(fst: FSTNode, options?: { filePath: string }): string {
     const route = options?.filePath || '.';
 
 
-    this._processFiles([oAST], route);
+    this._processFiles([fst], route);
     // Sry for this, but it is the only class not delivering a correct source code.
     return 'Done';
   }
@@ -24,20 +26,27 @@ export class DirectoryGenerator implements IGenerator {
   /**
    * Recursive file and folder generation
    *
-   * @param aNodesToProcess the tree nodes to process
+   * @param nodes the tree nodes to process
    * @param sTargetPath the path of the parent element
    */
-  private _processFiles(aNodesToProcess: Node[], sTargetPath: string) {
-    for (const oNode of aNodesToProcess) {
-      if (oNode.type === FileType.Folder) {
-        if (oNode.name !== 'root' && !existsSync(join(sTargetPath, oNode.name))) {
-          mkdirSync(join(sTargetPath, oNode.name));
+  private _processFiles(nodes: FSTNode[], sTargetPath: string) {
+    for (const node of nodes) {
+      if (node instanceof FSTNonTerminal) {
+        //a non-terminal node can only be a folder within the DirectoryGeneration and Parsing
+        if (node.getName() !== 'root' && !existsSync(join(sTargetPath, node.getName()))) {
+          mkdirSync(join(sTargetPath, node.getName()));
         }
-        this._processFiles(oNode.children || [], join(sTargetPath, oNode.name !== 'root' ? oNode.name : ''));
+        this._processFiles(node.getChildren() || [], join(sTargetPath, node.getName() !== 'root' ? node.getName() : ''));
       } else {
-        //we will write the file even if no content is provided!
-        if (!existsSync(join(sTargetPath, oNode.name))) {
-          writeFileSync(join(sTargetPath, oNode.name), oNode?.content || '');
+        if (node instanceof FSTTerminal && node.getType() === FileType.File) {
+          //we will write the file even if no content is provided!
+          if (!existsSync(join(sTargetPath, node.getName()))) {
+            writeFileSync(join(sTargetPath, node.getName()), (node as FSTTerminal)?.getContent() || '');
+          }
+        } else if (node instanceof FSTTerminal && node.getType() === FileType.Folder) {
+          if (node.getName() !== 'root' && !existsSync(join(sTargetPath, node.getName()))) {
+            mkdirSync(join(sTargetPath, node.getName()));
+          }
         }
       }
     }

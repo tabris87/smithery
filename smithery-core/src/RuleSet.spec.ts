@@ -5,9 +5,10 @@ import 'mocha';
 //import stuff to test
 import { RuleSet } from './RuleSet';
 import { IRule } from './Interfaces';
-import { Node } from './utils/Node';
 import { Imposer } from './Imposer';
 import { Rule } from './Rule';
+import { FSTNode } from './utils/FSTNode';
+import { FSTTerminal } from './utils/FSTTerminal'
 
 describe('Check the RuleSet', () => {
 
@@ -18,22 +19,22 @@ describe('Check the RuleSet', () => {
   it('RuleSet should add given rules for construction, additional to the default one', () => {
     const rs = new RuleSet([
       new Rule({
-        apply: (_: Node, __: Node, ___: Imposer): Node => {
-          return new Node();
+        apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+          return new FSTTerminal('', '');
         },
         target: 'test',
         selector: 'test'
       }),
       new Rule({
-        apply: (_: Node, __: Node, ___: Imposer): Node => {
-          return new Node();
+        apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+          return new FSTTerminal('', '');
         },
         target: 'test2',
         selector: 'test'
       }),
       new Rule({
-        apply: (_: Node, __: Node, ___: Imposer): Node => {
-          return new Node();
+        apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+          return new FSTTerminal('', '');
         },
         target: 'test3',
         selector: 'test'
@@ -63,8 +64,8 @@ describe('Check the RuleSet', () => {
 
     it('Using a custom fitted RulesSet', () => {
       const rs = new RuleSet();
-      rs.addRule({ apply: (_: Node, __: Node, ___: Imposer): Node => { return new Node; }, target: 'test', selector: 'test' });
-      rs.addRule({ apply: (_: Node, __: Node, ___: Imposer): Node => { return new Node; }, target: 'test2', selector: 'test2' });
+      rs.addRule({ apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => { return new FSTTerminal('', ''); }, target: 'test', selector: 'test' });
+      rs.addRule({ apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => { return new FSTTerminal('', ''); }, target: 'test2', selector: 'test2' });
       const rsCopy = rs.copy();
 
       expect(rsCopy).not.to.be.equal(rs);
@@ -76,8 +77,8 @@ describe('Check the RuleSet', () => {
   it('Check if a manually assigned rule, is available', () => {
     const rs = new RuleSet();
     rs.addRule({
-      apply: (_: Node, __: Node, ___: Imposer): Node => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+        return new FSTTerminal('', '');
       },
       target: 'test',
       selector: 'test'
@@ -90,20 +91,20 @@ describe('Check the RuleSet', () => {
   it('Check if a many manually assigned rules, are available', () => {
     const rs = new RuleSet();
     const manRules = [{
-      apply: (_: Node, __: Node, ___: Imposer): Node => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+        return new FSTTerminal('', '');
       },
       target: 'test',
       selector: 'test'
     }, {
-      apply: (_: Node, __: Node, ___: Imposer): Node => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+        return new FSTTerminal('', '');
       },
       target: 'test2',
       selector: 'test'
     }, {
-      apply: (_: Node, __: Node, ___: Imposer): Node => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+        return new FSTTerminal('', '');
       },
       target: 'test3',
       selector: 'test'
@@ -119,8 +120,8 @@ describe('Check the RuleSet', () => {
   it('Check if custom rules are used for processing', () => {
     const rs = new RuleSet();
     const rule: IRule = {
-      apply: (_: Node, __: Node, ___: Imposer): Node => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test',
@@ -128,10 +129,8 @@ describe('Check the RuleSet', () => {
     };
 
     //setting up the nodes
-    const baseNode = new Node();
-    const featureNode = new Node();
-    baseNode.path = 'test';
-    featureNode.path = 'test';
+    const baseNode = new FSTTerminal('', '');
+    const featureNode = new FSTTerminal('', '');
 
     //add the rule
     rs.addRule(rule);
@@ -142,8 +141,8 @@ describe('Check the RuleSet', () => {
   it('Check if language limiting are used for processing', () => {
     const rs = new RuleSet();
     const rule: IRule = {
-      apply: (_: Node, __: Node, ___: Imposer) => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer) => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test',
@@ -154,10 +153,8 @@ describe('Check the RuleSet', () => {
     rs.addRule(rule);
 
     //setting up the nodes
-    const baseNode = new Node();
-    const featureNode = new Node();
-    baseNode.path = 'test';
-    featureNode.path = 'test';
+    const baseNode = new FSTTerminal('', '');
+    const featureNode = new FSTTerminal('', '');
 
     //setting language limit to 'test'
     rs.limitToLanguage('testing');
@@ -180,8 +177,8 @@ describe('Check the RuleSet', () => {
     }
     const rs = new RuleSet();
     const rule: IRule = {
-      apply: (_: Node, __: Node, ___: Imposer): Node => {
-        return new Node();
+      apply: (_: FSTNode, __: FSTNode, ___: Imposer): FSTNode => {
+        return new FSTTerminal('', '');
       },
       target: 'testing',
       selector: 'test',
@@ -189,10 +186,8 @@ describe('Check the RuleSet', () => {
     };
 
     //setting up the nodes
-    const baseNode = new Node();
-    const featureNode = new Node();
-    baseNode.path = 'test';
-    featureNode.path = 'test';
+    const baseNode = new FSTTerminal('', '');
+    const featureNode = new FSTTerminal('', '');
 
     //add the rule
     rs.addRule(rule);
