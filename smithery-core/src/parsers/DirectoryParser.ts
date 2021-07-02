@@ -7,20 +7,18 @@ import * as pm from 'picomatch';
 import { FSTNode } from '../utils/FSTNode';
 import { FSTNonTerminal } from '../utils/FSTNonTerminal';
 import { FSTTerminal } from '../utils/FSTTerminal';
+import { ParserFactory } from '../Parser';
 
 export class DirectoryParser implements IParser {
-  parse(sFilePath: string, options?: { parent?: FSTNonTerminal, exclude?: string[] }): FSTNode {
+  parse(sFilePath: string, options?: { parent?: FSTNonTerminal, exclude?: string[], parserFactory?: ParserFactory }): FSTNode {
     const route = sFilePath || '.';
     const stats = lstatSync(route);
+    const parent = options?.parent;
 
-    const name: string = basename(sFilePath);
+    let name: string = 'root';
+    let featureName = '';
     let type: string = "";
-
-    if (stats.isDirectory()) {
-      type = FileType.Folder;
-    } else {
-      type = FileType.File;
-    }
+    let subfiles: string[] = [];
 
     let exclMatcher: (test: string) => boolean;
     if (options?.exclude) {
@@ -29,33 +27,52 @@ export class DirectoryParser implements IParser {
       //this should be the empty default matcher
       exclMatcher = pm([]);
     }
+
+    if (parent && parent.getName() === 'root') {
+      name = 'feature';
+      featureName = basename(sFilePath);
+    } else if (parent && parent.getName() !== 'root') {
+      name = basename(sFilePath);
+      featureName = parent.getFeatureName();
+    }
+
     //current assumption is that only direct childs should be excluded
     //otherwise an incomplete node will be created
     if (stats.isDirectory()) {
+      type = FileType.Folder;
+      subfiles = readdirSync(route);
       const node = new FSTNonTerminal(type, name);
-
-      const children = readdirSync(route).filter((child: string) => {
+      node.setFeatureName(featureName);
+      const children = subfiles.filter((child: string) => {
         return !exclMatcher(join(route, child));
       }).map((child: string) => {
         return this.parse(join(route, child), { parent: node, exclude: options?.exclude });
       });
       node.addChildren(children);
-      if (options?.parent) {
-        node.setParent(options?.parent);
-      }
       return node;
     } else {
+      type = FileType.File;
+      if (!parent) {
+        name = basename(sFilePath);
+      } else if (parent && parent.getName() === 'root') {
+        name = basename(sFilePath);
+      }
+
       const content = readFileSync(route, { encoding: 'utf-8' });
       const node = new FSTTerminal(type, name, content);
+      node.setFeatureName(featureName);
+
       const fileName = basename(route);
       const suffixIndex = fileName.lastIndexOf('.');
 
-      if (options?.parent) {
-        node.setParent(options.parent);
-      }
-
       if (suffixIndex > -1) {
         node.setCodeLanguage(fileName.substring(suffixIndex).replace('.', '').trim());
+        if (options?.parserFactory && options.parserFactory.getParser(node.getCodeLanguage())) {
+          node.setMergeStrategy('fileCompose');
+        } else {
+          console.warn(`No plugin for ${fileName.substring(suffixIndex).replace('.', '').trim()} found, set strategy to 'fileOverride'.`);
+          node.setMergeStrategy('fileOverride');
+        }
       } else {
         node.setMergeStrategy('fileOverride');
       }

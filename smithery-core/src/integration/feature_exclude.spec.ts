@@ -46,6 +46,7 @@ describe('New feature "exclude" test', () => {
     });
 
     const p = new Project();
+    debugger;
     p.build('config2');
 
     expect(fs.existsSync('./build')).to.be.true;

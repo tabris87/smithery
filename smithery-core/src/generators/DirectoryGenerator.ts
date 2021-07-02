@@ -17,8 +17,13 @@ export class DirectoryGenerator implements IGenerator {
   public generate(fst: FSTNode, options?: { filePath: string }): string {
     const route = options?.filePath || '.';
 
-
-    this._processFiles([fst], route);
+    if (fst instanceof FSTNonTerminal && fst.getName() === 'root' && fst.getType() === FileType.Folder) {
+      this._processFiles(fst.getChildren(), route);
+    } else if (fst instanceof FSTNonTerminal && fst.getName() === 'feature' && fst.getType() === FileType.Folder) {
+      this._processFiles(fst.getChildren(), route);
+    } else {
+      this._processFiles([fst], route);
+    }
     // Sry for this, but it is the only class not delivering a correct source code.
     return 'Done';
   }

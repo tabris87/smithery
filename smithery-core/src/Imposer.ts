@@ -25,7 +25,7 @@ export class Imposer {
 			//maybe set original feature name to ""			
 			//setOriginalFeatureName((FSTNonTerminal)current, "");
 			if (typeof composed !== 'undefined') {
-				composed = this.composeTrees(current, composed);
+				composed = this.composeTrees(composed, current);
 			} else {
 				composed = current;
 			}
@@ -89,9 +89,8 @@ export class Imposer {
 				const terminalComp: FSTTerminal = compNode as FSTTerminal;
 				const nonterminalParent: FSTNonTerminal = compParent as FSTNonTerminal;
 
-				let applicableRule: Rule | undefined;
 				//get applicable rule from compositionRules
-				this.ruleSet.getRule(terminalA.getMergeStrategy());
+				const applicableRule = this.ruleSet.getRule(terminalA.getMergeStrategy());
 				if (typeof applicableRule !== 'undefined') {
 					//apply composition rule
 					/* try { */
@@ -101,7 +100,7 @@ export class Imposer {
 						fireCompositionErrorOccured(e);
 					} */
 				} else {
-					console.error(`Error: don't know how to compose terminals: ${terminalB.toString()} replaces ${terminalA.toString()}`);
+					throw new Error(`don't know how to compose terminals: ${terminalB.toString()} replaces ${terminalA.toString()}`);
 				}
 				return terminalComp;
 			}

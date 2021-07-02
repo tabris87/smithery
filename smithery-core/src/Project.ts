@@ -247,7 +247,7 @@ export class Project {
       throw new Error(`The repository doesn't contain features, therefore no build is possible`);
     }
 
-    const containsBase: boolean = (this._projectAST as FSTNonTerminal).getChildren()?.filter((oChild) => oChild.getName() === 'Base').length === 1;
+    const containsBase: boolean = (this._projectAST as FSTNonTerminal).getChildren()?.filter((oChild) => oChild.getFeatureName() === 'Base').length === 1;
     if (!containsBase) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
@@ -268,9 +268,18 @@ export class Project {
 
     //create the featureMap to feed the imposer
     const featureMap: { [key: string]: FSTNode } = {};
-    this._projectAST.getChildren().forEach((node: FSTNode) => {
-      if (aFeatures.filter((f: string) => f.localeCompare(node.getName()) === 0)) {
-        featureMap[node.getName()] = node;
+
+    /* this._projectAST.getChildren().forEach((node: FSTNode) => {
+      if (aFeatures.filter((f: string) => f.localeCompare(node.getFeatureName()) === 0)) {
+        featureMap[node.getFeatureName()] = node;
+      }
+    }); */
+    aFeatures.forEach((feature: string) => {
+      const featureFST = (this._projectAST as FSTNonTerminal).getChildren().find((n: FSTNode) => n.getFeatureName() === feature);
+      if (featureFST) {
+        featureMap[feature] = featureFST;
+      } else {
+        throw new Error(`[${feature}] feature is not at the source code, stopped building`)
       }
     });
 
@@ -282,10 +291,11 @@ export class Project {
     if (!buildRemains) {
       mkdirSync(join(this._workingDir, this._buildTarget));
     }
-    
+
 
     this._generatorFactory.getGenerator(FileType.Folder)?.generate(resultFST, {
       filePath: join(this._workingDir, this._buildTarget),
+      featureOrigin: this._configurationOptions.projectFiles
     });
 
     // tslint:disable-next-line: no-console

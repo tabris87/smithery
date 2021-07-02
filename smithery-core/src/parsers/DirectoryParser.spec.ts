@@ -119,7 +119,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
 
     //if the terminal node provides no language the override strategy should be used
     expect((fst2 as FSTTerminal).getCodeLanguage()).to.be.equal('lang');
-    expect((fst2 as FSTTerminal).getMergeStrategy()).to.be.equal('');
+    expect((fst2 as FSTTerminal).getMergeStrategy()).to.be.equal('fileOverride');
 
     readFileSyncStub.restore();
     lstatSyncStub.restore();
@@ -193,7 +193,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
     const fst = dp.parse('testPath');
     expect(fst).not.to.be.undefined;
 
-    expect(fst.getName()).to.be.equal("testPath");
+    expect(fst.getName()).to.be.equal("root");
     expect(fst.getParent()).to.be.undefined;
     expect(fst.getType()).to.be.equal(FileType.Folder);
 
@@ -204,7 +204,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
     expect((fst as FSTNonTerminal).getChildren().length).to.be.equal(1);
     expect((fst as FSTNonTerminal).getChildAt(0) instanceof FSTTerminal).to.be.true;
     const firstChild = (fst as FSTNonTerminal).getChildAt(0);
-    expect(firstChild?.getName()).to.be.equal(path.join('testPath', 'testFile'));
+    expect(firstChild?.getName()).to.be.equal('testFile');
     expect(firstChild?.getType()).to.be.equal(FileType.File);
     expect((firstChild as FSTTerminal).getContent()).to.be.equal(fileContent);
 

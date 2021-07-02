@@ -94,8 +94,6 @@ export class FSTTerminal extends FSTNode {
         clone.setCodeLanguage(this.getCodeLanguage());
         clone.setFeatureName(this.getFeatureName());
         clone.setMergeStrategy(this.getMergeStrategy());
-        clone.setParent(this.getParent());
-        this.getParent()?.addChild(clone);
         return clone;
     }
 
@@ -103,12 +101,6 @@ export class FSTTerminal extends FSTNode {
      * @override
      */
     public shallowClone(): FSTNode {
-        const clone = new FSTTerminal(this.getType(), this.getName(), this.getContent());
-        clone.setCodeLanguage(this.getCodeLanguage());
-        clone.setFeatureName(this.getFeatureName());
-        clone.setMergeStrategy(this.getMergeStrategy());
-        clone.setParent(this.getParent());
-        this.getParent()?.addChild(clone);
-        return clone;
+        return this.deepClone();
     }
 }

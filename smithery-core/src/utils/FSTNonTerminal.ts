@@ -97,21 +97,13 @@ export class FSTNonTerminal extends FSTNode {
      * @override
      */
     public deepClone(): FSTNode {
-        const clone = new FSTNonTerminal(this.getType(), this.getName(), this.getChildren().map(c => c.deepClone()));
-        clone.setFeatureName(this.getFeatureName());
-        clone.setParent(this.getParent());
-        this.getParent()?.addChild(clone);
-        return clone;
+        return new FSTNonTerminal(this.getType(), this.getName(), this.getChildren().map(c => c.deepClone()));
     }
 
     /**
      * @override
      */
     public shallowClone(): FSTNode {
-        const clone = new FSTNonTerminal(this.getType(), this.getName(), this.getChildren());
-        clone.setFeatureName(this.getFeatureName());
-        clone.setParent(this.getParent());
-        this.getParent()?.addChild(clone);
-        return clone;
+        return new FSTNonTerminal(this.getType(), this.getName(), []);
     }
 }
