@@ -2,7 +2,7 @@ import { IParser } from '../Interfaces';
 import { FileType } from '../enums';
 
 import { lstatSync, readdirSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
 import * as pm from 'picomatch';
 import { FSTNode } from '../utils/FSTNode';
 import { FSTNonTerminal } from '../utils/FSTNonTerminal';
@@ -13,7 +13,7 @@ export class DirectoryParser implements IParser {
     const route = sFilePath || '.';
     const stats = lstatSync(route);
 
-    const name: string = sFilePath;
+    const name: string = basename(sFilePath);
     let type: string = "";
 
     if (stats.isDirectory()) {
@@ -46,7 +46,21 @@ export class DirectoryParser implements IParser {
       return node;
     } else {
       const content = readFileSync(route, { encoding: 'utf-8' });
-      return new FSTTerminal(type, name, content);
+      const node = new FSTTerminal(type, name, content);
+      const fileName = basename(route);
+      const suffixIndex = fileName.lastIndexOf('.');
+
+      if (options?.parent) {
+        node.setParent(options.parent);
+      }
+
+      if (suffixIndex > -1) {
+        node.setCodeLanguage(fileName.substring(suffixIndex).replace('.', '').trim());
+      } else {
+        node.setMergeStrategy('fileOverride');
+      }
+
+      return node;
     }
   }
 }

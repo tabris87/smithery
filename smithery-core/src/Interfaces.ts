@@ -1,5 +1,6 @@
 import { Imposer } from './Imposer';
 import { FSTNode } from './utils/FSTNode';
+import { FSTNonTerminal } from './utils/FSTNonTerminal';
 
 export interface IGenerator {
   generate(fst: FSTNode, options?: { [key: string]: unknown }): string;
@@ -10,10 +11,9 @@ export interface IParser {
 }
 
 export interface IRule {
-  apply: (baseFST: FSTNode, featureFST: FSTNode, context: Imposer) => FSTNode;
-  target: string | string[];
-  selector: string;
-  selectorFeature?: string;
+  apply: (baseFST: FSTNode, featureFST: FSTNode, targetNode: FSTNode, parent: FSTNonTerminal | undefined, context: Imposer) => void;
+  id: string;
+  package: string;
 }
 
 export interface IPlugin {

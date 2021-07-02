@@ -34,7 +34,7 @@ export class FSTNonTerminal extends FSTNode {
      * @returns FSTNode or undefined
      */
     public getChildAt(place: number): FSTNode | undefined {
-        if ((this._children.length - 1) <= place && place >= 0) {
+        if ((this._children.length - 1) >= place && place >= 0) {
             return this._children[place];
         } else {
             return undefined
@@ -47,8 +47,10 @@ export class FSTNonTerminal extends FSTNode {
      * @param node the child to add 
      * @returns the current instance for chaining
      */
-    public addChild(node: FSTNode): FSTNonTerminal {
-        this._children.push(node);
+    public addChild(node?: FSTNode): FSTNonTerminal {
+        if (node) {
+            this._children.push(node);
+        }
         return this;
     }
 
@@ -66,15 +68,50 @@ export class FSTNonTerminal extends FSTNode {
     }
 
     /**
+     * Return a node which has the same type and name of the given node
+     * @param node the node to compare
+     * @returns the compatible node
+     */
+    public getCompatibleChild(node: FSTNode): FSTNode | undefined {
+        for (let i = 0; i < this._children.length; i++) {
+            if (this._children[i].compatibleWith(node)) {
+                return this._children[i];
+            }
+        }
+    }
+
+    /**
      * @override
      */
     public toString(): string {
         return JSON.stringify({
             type: this.getType(),
             name: this.getName(),
-            childs: this._children.map(c => {
+            children: this._children.map(c => {
                 return JSON.parse(c.toString());
             })
         });
+    }
+
+    /**
+     * @override
+     */
+    public deepClone(): FSTNode {
+        const clone = new FSTNonTerminal(this.getType(), this.getName(), this.getChildren().map(c => c.deepClone()));
+        clone.setFeatureName(this.getFeatureName());
+        clone.setParent(this.getParent());
+        this.getParent()?.addChild(clone);
+        return clone;
+    }
+
+    /**
+     * @override
+     */
+    public shallowClone(): FSTNode {
+        const clone = new FSTNonTerminal(this.getType(), this.getName(), this.getChildren());
+        clone.setFeatureName(this.getFeatureName());
+        clone.setParent(this.getParent());
+        this.getParent()?.addChild(clone);
+        return clone;
     }
 }

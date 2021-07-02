@@ -11,6 +11,7 @@ import * as path from 'path';
 import { FSTTerminal } from '../utils/FSTTerminal';
 import { FSTNonTerminal } from '../utils/FSTNonTerminal';
 
+const dp = new DirectoryParser();
 
 describe('Check if the Directory Parser correctly parses file systems into the FST', () => {
   it('Check the correct creation without any information', () => {
@@ -19,6 +20,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
   });
 
   it('Check a single file to be parsed into the FST representation', () => {
+    //setup the test
     const lstatSyncStub = stub(fs, 'lstatSync');
     lstatSyncStub.returns({
       isFile: () => true,
@@ -51,7 +53,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
     const readFileSyncStub = stub(fs, 'readFileSync');
     readFileSyncStub.returns('This is the correct File content');
 
-    const dp = new DirectoryParser();
+    //perform test
     const fst = dp.parse('testPath');
     expect(fst).not.to.be.undefined;
 
@@ -61,6 +63,63 @@ describe('Check if the Directory Parser correctly parses file systems into the F
 
     //now check the most important the node type !
     expect(fst instanceof FSTTerminal).to.be.true;
+
+    //if the terminal node provides no language the override strategy should be used
+    expect((fst as FSTTerminal).getCodeLanguage()).to.be.equal('');
+    expect((fst as FSTTerminal).getMergeStrategy()).to.be.equal('fileOverride');
+
+    readFileSyncStub.restore();
+    lstatSyncStub.restore();
+  });
+
+  it('Check if language is correctly determined', () => {
+    //setup the test
+    const lstatSyncStub = stub(fs, 'lstatSync');
+    lstatSyncStub.returns({
+      isFile: () => true,
+      isDirectory: () => false,
+      isBlockDevice: () => false,
+      isCharacterDevice: () => false,
+      isSymbolicLink: () => false,
+      isFIFO: () => false,
+      isSocket: () => false,
+      dev: 0,
+      ino: 0,
+      mode: 0,
+      nlink: 0,
+      uid: 0,
+      gid: 0,
+      rdev: 0,
+      size: 2000,
+      blksize: 200,
+      blocks: 2,
+      atimeMs: 2000,
+      mtimeMs: 2000,
+      ctimeMs: 2000,
+      birthtimeMs: 2000,
+      atime: new Date(),
+      mtime: new Date(),
+      ctime: new Date(),
+      birthtime: new Date()
+    });
+
+    const readFileSyncStub = stub(fs, 'readFileSync');
+    readFileSyncStub.returns('This is the correct File content');
+
+    //perform test
+    const fst2 = dp.parse('terminal.lang');
+    expect(fst2).not.to.be.undefined;
+
+    expect(fst2.getName()).to.be.equal("terminal.lang");
+    expect(fst2.getParent()).to.be.undefined;
+    expect(fst2.getType()).to.be.equal(FileType.File);
+
+    //now check the most important the node type !
+    expect(fst2 instanceof FSTTerminal).to.be.true;
+
+    //if the terminal node provides no language the override strategy should be used
+    expect((fst2 as FSTTerminal).getCodeLanguage()).to.be.equal('lang');
+    expect((fst2 as FSTTerminal).getMergeStrategy()).to.be.equal('');
 
     readFileSyncStub.restore();
     lstatSyncStub.restore();
@@ -148,6 +207,10 @@ describe('Check if the Directory Parser correctly parses file systems into the F
     expect(firstChild?.getName()).to.be.equal(path.join('testPath', 'testFile'));
     expect(firstChild?.getType()).to.be.equal(FileType.File);
     expect((firstChild as FSTTerminal).getContent()).to.be.equal(fileContent);
+
+    //if the terminal node provides no language the override strategy should be used
+    expect((firstChild as FSTTerminal).getCodeLanguage()).to.be.equal('');
+    expect((firstChild as FSTTerminal).getMergeStrategy()).to.be.equal('fileOverride');
 
     lstatSyncStub.restore();
     readFileSyncStub.restore();

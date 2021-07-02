@@ -47,7 +47,10 @@ describe('Multiple errors within playground tests, for retest and correction pur
     });
 
     const p = new Project();
+    debugger;
     p.build('default');
+
+    debugger;
 
     expect(fs.existsSync('./build')).to.be.true;
     expect(fs.existsSync(path.join('./build', 'README.md'))).to.be.true;

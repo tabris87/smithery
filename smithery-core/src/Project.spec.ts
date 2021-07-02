@@ -129,7 +129,7 @@ describe('Testing the Project class', () => {
 
       mock.restore();
     })
-  
+
     it('Project should be able to instantiate by the smithery.json configuration with custom rules', () => {
       mock({
         'smithery.json': `{
@@ -207,7 +207,7 @@ describe('Testing the Project class', () => {
 
       mock.restore();
     });
-    });
+  });
 
   describe('Project has to throw a error if a combination of configurations is not complete', () => {
     it('custom config is invalid', () => {
@@ -315,7 +315,7 @@ describe('Testing the Project class', () => {
 
     mock.restore();
   });
-  
+
   it('Project should throw an error if the given config is not a internal saved configurations', () => {
     mock({
       //let's name configurations in german

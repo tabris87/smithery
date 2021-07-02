@@ -3,163 +3,234 @@ import { GeneratorFactory } from './Generator';
 import { RuleSet } from './RuleSet';
 import { FSTNode } from './utils/FSTNode';
 import { FSTTerminal } from './utils/FSTTerminal';
+import { FSTNonTerminal } from './utils/FSTNonTerminal';
+import { Rule } from './Rule';
 
 export class Imposer {
-  private parserFactory: ParserFactory;
-  private generatorFactory: GeneratorFactory;
-  private ruleSet: RuleSet;
+	private parserFactory: ParserFactory;
+	private generatorFactory: GeneratorFactory;
+	private ruleSet: RuleSet;
 
-  constructor(parser: ParserFactory, generator: GeneratorFactory, rules: RuleSet) {
-    this.parserFactory = parser;
-    this.generatorFactory = generator;
-    this.ruleSet = rules;
-  }
+	constructor(parser: ParserFactory, generator: GeneratorFactory, rules: RuleSet) {
+		this.parserFactory = parser;
+		this.generatorFactory = generator;
+		this.ruleSet = rules;
+	}
 
-  public impose(base: FSTNode, feature: FSTNode, visitorKeys: { [key: string]: string[] }): FSTNode {
-    const match = this.ruleSet.getMatchingRule(base, feature);
-    if (match) {
-      return match.apply(base, feature, this);
-    }
+	public impose(features: { [key: string]: FSTNode }, featureOrder: string[]): FSTNode {
+		let composed: FSTNode | undefined;
+		for (const featureName of featureOrder) {
+			//Several features will be merged in this node. Therefore its original feature is removed.
+			const current = features[featureName];
+			//maybe set original feature name to ""			
+			//setOriginalFeatureName((FSTNonTerminal)current, "");
+			if (typeof composed !== 'undefined') {
+				composed = this.composeTrees(current, composed);
+			} else {
+				composed = current;
+			}
+		}
 
-    /* new strategy:
-     * 1. check if rule is matching
-     * 2. otherwise traverse deeper
-     * 3. comparison by id and path
-     */
+		return composed ? composed : new FSTTerminal('', '');
+	}
 
-    const baseKeys: string[] = Object.keys(base).sort((a, b) => a.localeCompare(b));
+	/**
+	 * Set the original feature of FSTTerminals, because the tree is composed and this
+	 * information would be lost.
+	 */
+	/* protected setOriginalFeatureName(node: FSTNonTerminal, feature: string) => void {
+	   if (node.getType().equals("Feature")) {
+		   feature = node.getName();
+	   }
+	   for (let child : node.getChildren()) {
+		   if (child instanceof FSTNonTerminal) {
+			   setOriginalFeatureName((FSTNonTerminal) child, feature);
+		   } else if (child instanceof FSTTerminal) {
+			   (child as FSTTerminal).setOriginalFeatureName(feature);
+		   }
+	   }
+   } */
 
-    /* visitorKeys[base.type].forEach((childKeys) => {
-      const index: number = baseKeys.indexOf(childKeys);
-      if (index > -1) {
-        baseKeys.splice(index, 1);
-      }
-    }); */
+	private composeTrees(nodeA: FSTNode, nodeB: FSTNode, compParent?: FSTNonTerminal): FSTNode | undefined {
+		if (nodeA.compatibleWith(nodeB)) {
+			const compNode: FSTNode = nodeA.shallowClone();
+			compNode.setParent(compParent);
 
-    /* const newNode = base.clone(); */
-    //just add all necessary informations to the resulting node
-    /* JS-Way ;)
-      for (var key of aBaseKeys) {
-       oNewNode[key] = base[key];
-      } 
-    */
+			// composed SubTree-stub is integrated in the new Tree, needs
+			// children
+			if (nodeA instanceof FSTNonTerminal && nodeB instanceof FSTNonTerminal) {
+				const nonterminalA: FSTNonTerminal = nodeA as FSTNonTerminal;
+				const nonterminalB: FSTNonTerminal = nodeB as FSTNonTerminal;
+				const nonterminalComp: FSTNonTerminal = compNode as FSTNonTerminal;
 
-    /* newNode.featureName = feature.featureName;
-    const childKeys = visitorKeys[base.type]; */
-    // check all childs and include all childs
+				for (const childB of nonterminalB.getChildren()) {
+					const childA = nonterminalA.getCompatibleChild(childB);
+					// for each child of B get the first compatible child of A
+					// (CompatibleChild means a Child which root equals B's
+					// root)
+					if (typeof childA === 'undefined') {
+						// no compatible child, FST-node only in B
+						nonterminalComp.addChild(childB.deepClone());
+					} else {
+						nonterminalComp.addChild(this.composeTrees(childA, childB, nonterminalComp));
+					}
+				}
+				for (const childA of nonterminalA.getChildren()) {
+					const childB = nonterminalB.getCompatibleChild(childA);
+					if (typeof childB === 'undefined') {
+						// no compatible child, FST-node only in A
+						this.handleChildWithoutCompatibleSiblings(childA, nonterminalComp);
+					}
+				}
+				return nonterminalComp;
+			} else if (nodeA instanceof FSTTerminal && nodeB instanceof FSTTerminal && compParent instanceof FSTNonTerminal) {
+				const terminalA: FSTTerminal = nodeA as FSTTerminal;
+				const terminalB: FSTTerminal = nodeB as FSTTerminal;
+				const terminalComp: FSTTerminal = compNode as FSTTerminal;
+				const nonterminalParent: FSTNonTerminal = compParent as FSTNonTerminal;
 
-    /* childKeys.forEach((childKey) => {
-      const baseChilds = base[childKey];
-      const featureChilds = feature[childKey];
-      let resultingChilds: Node[] = [];
+				let applicableRule: Rule | undefined;
+				//get applicable rule from compositionRules
+				this.ruleSet.getRule(terminalA.getMergeStrategy());
+				if (typeof applicableRule !== 'undefined') {
+					//apply composition rule
+					/* try { */
+					applicableRule.apply(terminalA, terminalB, terminalComp, nonterminalParent, this);
 
-      if (typeof baseChilds === 'object' && Array.isArray(baseChilds)) {
-        baseChilds.forEach((childBase) => {
-          childBase.featureName = base.featureName;
-          const childIndex: number[] = [];
-          const childFeature = featureChilds.filter((featureChild: Node, index: number) => {
-            if (featureChild.path === childBase.path && featureChild.name === childBase.name) {
-              childIndex.push(index);
-              return true;
-            } else {
-              return false;
-            }
-          });
+					/* } catch (CompositionException e) {
+						fireCompositionErrorOccured(e);
+					} */
+				} else {
+					console.error(`Error: don't know how to compose terminals: ${terminalB.toString()} replaces ${terminalA.toString()}`);
+				}
+				return terminalComp;
+			}
+		}
+	}
 
-          // if no child for the feature can be found take the base one
-          if (childFeature.length === 0) {
-            childBase.featureName = feature.featureName;
-            resultingChilds.push(childBase);
-          }
+	private handleChildWithoutCompatibleSiblings(node: FSTNode, compParent: FSTNonTerminal): void {
+		compParent.addChild(node);
+	}
 
-          // if a feature child is matching
-          if (childFeature.length === 1) {
-            const newChild: Node = childFeature[0];
-            newChild.featureName = feature.featureName;
-            const subImposeChildOne = this.impose(childBase, newChild, visitorKeys);
-            if (Array.isArray(subImposeChildOne)) {
-              resultingChilds = resultingChilds.concat(subImposeChildOne);
-            } else {
-              resultingChilds.push(subImposeChildOne);
-            }
+	//#region getter/setter
+	public setParserFactory(parser: ParserFactory): void {
+		this.parserFactory = parser;
+	}
 
-            //remove the feature childs afterwards
-            featureChilds.splice(childIndex[0], 1);
-          }
+	public setGeneratorFactory(generator: GeneratorFactory): void {
+		this.generatorFactory = generator;
+	}
 
-          if (childFeature.length > 1) {
-            console.warn(
-              'more than one child is matching find a rule to merge this node and its children more precisly.',
-            );
-            console.group();
-            console.warn('Path: ' + base.path);
-            console.warn('Name: ' + base.name);
-            console.warn('PropertyKey: ' + childKey);
-            console.group();
-            childFeature.forEach((featureChild: Node) => {
-              console.warn(featureChild.path + "' '" + featureChild.name);
-            });
-            console.groupEnd();
-            console.groupEnd();
+	public setRuleSet(rules: RuleSet): void {
+		this.ruleSet = rules;
+	}
 
-            const firstFeatureChild: Node = childFeature[0];
+	public getParserFactory(): ParserFactory {
+		return this.parserFactory;
+	}
 
-            const oSubImposeChildMany = this.impose(childBase, firstFeatureChild, visitorKeys);
-            if (Array.isArray(oSubImposeChildMany)) {
-              resultingChilds = resultingChilds.concat(oSubImposeChildMany);
-            } else {
-              resultingChilds.push(oSubImposeChildMany);
-            }
+	public getGeneratorFactory(): GeneratorFactory {
+		return this.generatorFactory;
+	}
 
-            //remove the feature childs afterwards
-            featureChilds.splice(childIndex[0], 1);
-          }
-        });
-
-        // add missing 'new' feature childs
-        resultingChilds = resultingChilds.concat(featureChilds);
-        newNode[childKey] = resultingChilds;
-      } else {
-        if (typeof baseChilds === typeof featureChilds && typeof baseChilds === 'undefined') {
-          newNode[childKey] = resultingChilds;
-        } else if (typeof baseChilds === typeof featureChilds && !Array.isArray(featureChilds)) {
-          baseChilds.featureName = base.featureName;
-          featureChilds.featureName = feature.featureName;
-          // Keep it without result distinguish
-          newNode[childKey] = this.impose(baseChilds, featureChilds, visitorKeys);
-        } else {
-          throw new Error('Non array children differ');
-        }
-      }
-    });
-
-    return newNode; */
-    return new FSTTerminal('', '');
-  }
-
-  //#region getter/setter
-  public setParserFactory(parser: ParserFactory): void {
-    this.parserFactory = parser;
-  }
-
-  public setGeneratorFactory(generator: GeneratorFactory): void {
-    this.generatorFactory = generator;
-  }
-
-  public setRuleSet(rules: RuleSet): void {
-    this.ruleSet = rules;
-  }
-
-  public getParserFactory(): ParserFactory {
-    return this.parserFactory;
-  }
-
-  public getGeneratorFactory(): GeneratorFactory {
-    return this.generatorFactory;
-  }
-
-  public getRuleSet(): RuleSet {
-    return this.ruleSet;
-  }
-  //#endregion
+	public getRuleSet(): RuleSet {
+		return this.ruleSet;
+	}
+	//#endregion
 }
+
+/*
+	private FSTNode compose(List<FSTNonTerminal> tl) {
+		FSTNode composed = null;
+		for (FSTNode current : tl) {
+			// Several features will be merged in this node. Therefore its original feature is removed.
+			setOriginalFeatureName((FSTNonTerminal)current, "");
+			if (composed != null) {
+				composed = compose(current, composed);
+			} else {
+				if (cmd.featureAnnotation) {
+					addAnnotationToChildrenMethods(current, current.getFeatureName());
+				}
+				composed = current;
+			}
+		}
+		return composed;
+	}
+
+	public FSTNode compose(FSTNode nodeA, FSTNode nodeB) {
+		return compose(nodeA, nodeB, null);
+	}
+
+	public FSTNode compose(FSTNode nodeA, FSTNode nodeB,
+			FSTNonTerminal compParent) {
+
+		if (nodeA.compatibleWith(nodeB)) {
+			FSTNode compNode = nodeA.getShallowClone();
+			compNode.setParent(compParent);
+
+			// composed SubTree-stub is integrated in the new Tree, needs
+			// children
+			if (nodeA instanceof FSTNonTerminal
+					&& nodeB instanceof FSTNonTerminal) {
+				FSTNonTerminal nonterminalA = (FSTNonTerminal) nodeA;
+				FSTNonTerminal nonterminalB = (FSTNonTerminal) nodeB;
+				FSTNonTerminal nonterminalComp = (FSTNonTerminal) compNode;
+
+				for (FSTNode childB : nonterminalB.getChildren()) {
+					FSTNode childA = nonterminalA.getCompatibleChild(childB);
+					// for each child of B get the first compatible child of A
+					// (CompatibleChild means a Child which root equals B's
+					// root)
+					if (childA == null) {
+						// no compatible child, FST-node only in B
+						nonterminalComp.addChild(childB.getDeepClone());
+					} else {
+						nonterminalComp.addChild(compose(childA, childB,
+								nonterminalComp));
+					}
+				}
+				for (FSTNode childA : nonterminalA.getChildren()) {
+					FSTNode childB = nonterminalB.getCompatibleChild(childA);
+					if (childB == null) {
+						// no compatible child, FST-node only in A
+						handleChildWithoutCompatibleSiblings(childA, nonterminalComp);
+					}
+				}
+				return nonterminalComp;
+			} else if (nodeA instanceof FSTTerminal
+					&& nodeB instanceof FSTTerminal
+					&& compParent instanceof FSTNonTerminal) {
+				FSTTerminal terminalA = (FSTTerminal) nodeA;
+				FSTTerminal terminalB = (FSTTerminal) nodeB;
+				FSTTerminal terminalComp = (FSTTerminal) compNode;
+				FSTNonTerminal nonterminalParent = (FSTNonTerminal) compParent;
+
+				CompositionRule applicableRule = null;
+				//get applicable rule from compositionRules
+				for (CompositionRule rule: compositionRules) {
+					if (terminalA.getCompositionMechanism().equals(rule.getRuleName())) {
+						 applicableRule = rule;
+						 break;
+					}
+				}
+				if (applicableRule != null) {
+					//apply composition rule
+					try {
+						applicableRule.compose(terminalA, terminalB, terminalComp, nonterminalParent);
+					} catch (CompositionException e) {
+						fireCompositionErrorOccured(e);
+					}
+				} else {
+					System.err
+							.println("Error: don't know how to compose terminals: "
+									+ terminalB.toString()
+									+ " replaces "
+									+ terminalA.toString());
+				}
+				return terminalComp;
+			}
+			return null;
+		} else
+			return null;
+	}
+*/

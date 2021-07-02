@@ -10,6 +10,9 @@ import { IPlugin, IRule } from './Interfaces';
 import { Rule } from './Rule';
 
 import { FileType } from './enums';
+import { FSTTerminal } from './utils/FSTTerminal';
+import { FSTNode } from './utils/FSTNode';
+import { FSTNonTerminal } from './utils/FSTNonTerminal';
 
 type configurationOptions = {
   configPath?: string;
@@ -36,7 +39,7 @@ export class Project {
   private _config: null | { name: string; features: string[] } = null;
   private _buildTarget: string;
   private _plugins: IPlugin[] | null;
-  private _projectAST: Node | undefined;
+  private _projectAST: FSTNode | undefined;
 
   private _ruleSet: RuleSet = new RuleSet();
   private _parserFactory: ParserFactory = new ParserFactory();
@@ -207,7 +210,7 @@ export class Project {
   }
 
   public build(configName?: string): void {
-    /* if (configName) {
+    if (configName) {
       this.setConfig(configName);
     }
 
@@ -231,10 +234,6 @@ export class Project {
       throw new Error('No Base feature set up! Build not possible!');
     }
 
-    // now we know the features contains base, therefore we can use it.
-    // exclude base from the features to be applied.
-    let aBuildFeatures = aFeatures.filter((sFeatureName) => sFeatureName !== 'Base');
-
     //have to place it here, to always have a fresh copy of the filesystem
     //maybe we need a more performant solution
     this._projectAST =
@@ -242,47 +241,55 @@ export class Project {
         .getParser(FileType.Folder)
         ?.parse(join(this._workingDir, this._configurationOptions.projectFiles), {
           exclude: this._configurationOptions.exclude
-        }) || new Node();
+        }) || new FSTTerminal('', '');
 
-    const baseFST: Node[] = this._projectAST.children?.filter((oChild) => oChild.name === 'Base') || [];
-    if (baseFST.length === 0) {
+    if (!(this._projectAST instanceof FSTNonTerminal)) {
+      throw new Error(`The repository doesn't contain features, therefore no build is possible`);
+    }
+
+    const containsBase: boolean = (this._projectAST as FSTNonTerminal).getChildren()?.filter((oChild) => oChild.getName() === 'Base').length === 1;
+    if (!containsBase) {
       throw new Error('Base feature is not at the source code, therefore we can not start');
     }
 
-    let resultFST: Node | Node[] = baseFST[0].clone();
-    resultFST.name = 'root';
-    resultFST.featureName = 'BASE';
-
-    while (aBuildFeatures.length > 0) {
-      // Taking aFeatures like a queue
-      const curFeature = aBuildFeatures.shift() || '';
-      // tslint:disable-next-line: no-console
-      console.log(`Imposing feature: ${curFeature}`);
-      const featuresArray = this._projectAST.children?.filter((oChild) => oChild.name === curFeature) || [];
-      if (featuresArray.length === 0) {
-        throw new Error(`[${curFeature}] feature is not at the source code, stopped building`);
+    //ensure base is the first feature, other features should keep thier order
+    //@TODO: future feature -> retain manual sort order, by model oder parameter
+    aFeatures = aFeatures.sort(
+      (a, b) => {
+        if (a.localeCompare('Base') === 0) {
+          return -1;
+        } else if (b.localeCompare('Base') === 0) {
+          return 1;
+        } else {
+          return 0;
+        }
       }
+    );
 
-      const featureFST: Node = featuresArray[0];
-      featureFST.name = 'root';
-      featureFST.featureName = curFeature.toUpperCase();
-      resultFST = this._imposer.impose(
-        resultFST,
-        featureFST,
-        this._parserFactory.getParser(FileType.Folder)?.getVisitorKeys() || {},
-      );
-    }
+    //create the featureMap to feed the imposer
+    const featureMap: { [key: string]: FSTNode } = {};
+    this._projectAST.getChildren().forEach((node: FSTNode) => {
+      if (aFeatures.filter((f: string) => f.localeCompare(node.getName()) === 0)) {
+        featureMap[node.getName()] = node;
+      }
+    });
+
+    const resultFST: FSTNode = this._imposer.impose(featureMap, aFeatures);
 
     // check if build target already exists and clear it
     const buildRemains: boolean = this._clearBuildTarget(join(this._workingDir, this._buildTarget));
     // create the build target newly
-    if (!buildRemains) { mkdirSync(join(this._workingDir, this._buildTarget)); }
+    if (!buildRemains) {
+      mkdirSync(join(this._workingDir, this._buildTarget));
+    }
+    
+
     this._generatorFactory.getGenerator(FileType.Folder)?.generate(resultFST, {
       filePath: join(this._workingDir, this._buildTarget),
     });
 
     // tslint:disable-next-line: no-console
-    console.log('Build done. -> Have fun.'); */
+    console.log('Build done. -> Have fun.');
   }
 
   public setConfig(configName: string): void {

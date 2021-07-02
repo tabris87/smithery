@@ -12,10 +12,9 @@ describe('Check the ParserFactory', () => {
     expect(new ParserFactory()).not.to.be.undefined;
   });
 
-  it('GeneratorFactory should contain at least the "File" and "Folder" generators.', () => {
+  it('GeneratorFactory should contain at least the "File" and "Folder" parser.', () => {
     const parseFact = new ParserFactory();
     expect(parseFact.getParser(FileType.File)).not.to.be.undefined;
     expect(parseFact.getParser(FileType.Folder)).not.to.be.undefined;
   });
-
 });
