@@ -67,4 +67,22 @@ describe('Check the generating ability of the DirectoryGenerator', () => {
     expect(writeFileSyncStub.calledOnce).to.be.true;
     expect(writeFileSyncStub.calledWith(join('testPath', 'testFolder', 'testFile.test'), 'This is my test-content')).to.be.true;
   });
+
+  it('Check the root node', () => {
+    const tree = new FSTNonTerminal(FileType.Folder, 'root', [
+      new FSTNonTerminal(FileType.Folder, 'feature', [
+        new FSTTerminal(FileType.File, 'test.md', 'This is a test.')
+      ]),
+      new FSTNonTerminal(FileType.Folder, 'feature', [
+        new FSTTerminal(FileType.File, 'second.md', 'Another test content.')
+      ])
+    ]);
+
+    const gen = new DirectoryGenerator();
+    const res = gen.generate(tree);
+    expect(res).equal('Done');
+    expect(mkdirSyncStub.calledOnce).to.be.not.true;
+
+    expect(writeFileSyncStub.calledOnce).to.be.true;
+  });
 });

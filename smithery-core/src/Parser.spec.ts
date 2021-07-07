@@ -16,5 +16,6 @@ describe('Check the ParserFactory', () => {
     const parseFact = new ParserFactory();
     expect(parseFact.getParser(FileType.File)).not.to.be.undefined;
     expect(parseFact.getParser(FileType.Folder)).not.to.be.undefined;
+    expect(parseFact.getParser()).to.be.undefined;
   });
 });

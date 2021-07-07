@@ -20,6 +20,6 @@ export const rule: IRule = {
         (newNode as FSTTerminal).setMergeStrategy((feature as FSTTerminal).getMergeStrategy());
         (newNode as FSTTerminal).setParent(parent);
     },
-    id: 'fileOverride',
+    id: 'override',
     package: 'smithery-core'
 };

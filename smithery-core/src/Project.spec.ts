@@ -267,77 +267,80 @@ describe('Testing the Project class', () => {
     });
   });
 
-  it('Project should throw an error if the configs path is invalid', () => {
-    mock({
-      //let's name configurations in german
-      'test.config': `{
+  describe('Project should throw different errors with incomplete or failing configurations', () => {
+    it('Project should throw an error if the configs path is invalid', () => {
+      mock({
+        //let's name configurations in german
+        'test.config': `{
         "model":"./model/model.xml",
         "configs":"Konfigurationen",
         "projectFiles":"features",
         "buildFolder":"build"
       }`,
-      'configurations': {
-        'default.config': 'Base'
-      },
-      'features': {
-        'Base': {
-          'README.md': 'TEST'
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
         }
-      }
+      });
+
+      assert.throws(() => { new Project({ configPath: 'test.config' }) }, 'The build-configurations setup is not given properly');
+
+      mock.restore();
     });
 
-    assert.throws(() => { new Project({ configPath: 'test.config' }) }, 'The build-configurations setup is not given properly');
-
-    mock.restore();
-  });
-
-  it('Project should throw an error if there are not configurations witch can be set', () => {
-    mock({
-      //let's name configurations in german
-      'configurations': {
-        'default.config': 'Base'
-      },
-      'features': {
-        'Base': {
-          'README.md': 'TEST'
+    it('Project should throw an error if there are not configurations witch can be set', () => {
+      mock({
+        //let's name configurations in german
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
         }
-      }
+      });
+      const p = new Project({
+        buildFolder: 'build',
+        projectFiles: 'features',
+        configs: []
+      });
+
+      assert.throws(() => {
+        p.setConfig('test');
+      }, 'No configs given');
+
+      mock.restore();
     });
-    const p = new Project({
-      buildFolder: 'build',
-      projectFiles: 'features',
-      configs: []
-    });
 
-    assert.throws(() => {
-      p.setConfig('test');
-    }, 'No configs given');
-
-    mock.restore();
-  });
-
-  it('Project should throw an error if the given config is not a internal saved configurations', () => {
-    mock({
-      //let's name configurations in german
-      'configurations': {
-        'default.config': 'Base'
-      },
-      'features': {
-        'Base': {
-          'README.md': 'TEST'
+    it('Project should throw an error if the given config is not a internal saved configurations', () => {
+      mock({
+        //let's name configurations in german
+        'configurations': {
+          'default.config': 'Base'
+        },
+        'features': {
+          'Base': {
+            'README.md': 'TEST'
+          }
         }
-      }
-    });
-    const p = new Project({
-      buildFolder: 'build',
-      projectFiles: 'features',
-      configs: [{ name: 'default', features: ['base'] }]
-    });
+      });
+      const p = new Project({
+        buildFolder: 'build',
+        projectFiles: 'features',
+        configs: [{ name: 'default', features: ['base'] }]
+      });
 
-    assert.throws(() => {
-      p.setConfig('test');
-    }, 'Config for test does not exist withing configurations');
+      assert.throws(() => {
+        p.setConfig('test');
+      }, 'Config for test does not exist withing configurations');
 
-    mock.restore();
+      mock.restore();
+    });
   });
+  
 });

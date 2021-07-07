@@ -16,6 +16,7 @@ describe('Check the GeneratorFactory', () => {
     const genFact = new GeneratorFactory();
     expect(genFact.getGenerator(FileType.File)).not.to.be.undefined;
     expect(genFact.getGenerator(FileType.Folder)).not.to.be.undefined;
+    expect(genFact.getGenerator()).to.be.undefined;
   });
 
 });

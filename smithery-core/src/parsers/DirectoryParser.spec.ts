@@ -66,7 +66,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
 
     //if the terminal node provides no language the override strategy should be used
     expect((fst as FSTTerminal).getCodeLanguage()).to.be.equal('');
-    expect((fst as FSTTerminal).getMergeStrategy()).to.be.equal('fileOverride');
+    expect((fst as FSTTerminal).getMergeStrategy()).to.be.equal('override');
 
     readFileSyncStub.restore();
     lstatSyncStub.restore();
@@ -119,7 +119,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
 
     //if the terminal node provides no language the override strategy should be used
     expect((fst2 as FSTTerminal).getCodeLanguage()).to.be.equal('lang');
-    expect((fst2 as FSTTerminal).getMergeStrategy()).to.be.equal('fileOverride');
+    expect((fst2 as FSTTerminal).getMergeStrategy()).to.be.equal('override');
 
     readFileSyncStub.restore();
     lstatSyncStub.restore();
@@ -210,7 +210,7 @@ describe('Check if the Directory Parser correctly parses file systems into the F
 
     //if the terminal node provides no language the override strategy should be used
     expect((firstChild as FSTTerminal).getCodeLanguage()).to.be.equal('');
-    expect((firstChild as FSTTerminal).getMergeStrategy()).to.be.equal('fileOverride');
+    expect((firstChild as FSTTerminal).getMergeStrategy()).to.be.equal('override');
 
     lstatSyncStub.restore();
     readFileSyncStub.restore();

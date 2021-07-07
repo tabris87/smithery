@@ -103,6 +103,8 @@ export class Imposer {
 					throw new Error(`don't know how to compose terminals: ${terminalB.toString()} replaces ${terminalA.toString()}`);
 				}
 				return terminalComp;
+			} else {
+				throw new Error(`${nodeA.getFeatureName()} and ${nodeB.getFeatureName()} are a mix of Terminal and Non-Terminal Nodes.`)
 			}
 		}
 	}

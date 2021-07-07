@@ -102,7 +102,6 @@ describe('Scenario test for builds using different configurations', () => {
       const writeFileSyncStub = sinon.stub(fs, 'writeFileSync');
 
       const p = new Project();
-      debugger;
       p.build('one');
       //first the build folder because this one is missing
       //second call for the root folder

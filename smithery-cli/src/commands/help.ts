@@ -8,7 +8,6 @@ export class Help extends SmitheryCommand {
 
     public execute(cmdArguments?: string | string[], options?: { [key: string]: string | number | boolean; }): void {
         let commandName = '';
-        debugger;
         if (cmdArguments && Array.isArray(cmdArguments) && cmdArguments?.length === 1) {
             commandName = cmdArguments[0];
         } else if (cmdArguments && !Array.isArray(cmdArguments)) {

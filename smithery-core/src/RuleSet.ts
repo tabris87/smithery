@@ -1,7 +1,6 @@
 import { IRule } from './Interfaces';
-import { fileImpose } from './rules';
+import { fileImpose, override } from './rules';
 import { Rule } from './Rule';
-import { threadId } from 'worker_threads';
 
 export class RuleSet {
   private _rules: Rule[] = [];
@@ -14,7 +13,7 @@ export class RuleSet {
   }
 
   private _loadDefaultRules(): void {
-    const rulePatterns: IRule[] = [fileImpose];
+    const rulePatterns: IRule[] = [fileImpose, override];
     this._rules = rulePatterns.map((rp) => new Rule(rp));
   }
 
@@ -35,7 +34,8 @@ export class RuleSet {
   }
 
   public copy(): RuleSet {
-    //based on the constructor we can assume that the first rule is everytime the default rule
-    return new RuleSet(this._rules.slice(1, this._rules.length).map(r => r.copy()));
+    //based on the constructor we can assume that the first two rules are everytime the default rules
+    //fileCompose, override
+    return new RuleSet(this._rules.slice(2, this._rules.length).map(r => r.copy()));
   }
 }

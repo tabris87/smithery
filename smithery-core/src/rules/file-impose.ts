@@ -32,20 +32,23 @@ export const rule: IRule = {
       throw new Error(`'base' node or 'feature' node does not contain source code'`);
     }
 
-    // 2. impose both structures
-    const baseFST = parser.parse(baseN.getContent());
-    const featureFST = parser.parse(featureN.getContent());
-    const resultFST = context.impose({ 'base': baseFST, 'feature': featureFST }, ['base', 'feature']);
-
     const generator = context.getGeneratorFactory().getGenerator(baseN.getCodeLanguage());
 
     if (!generator) {
       throw new Error('Generator not correctly defined');
     }
 
-    (resultFST as FSTTerminal).setContent(generator.generate(resultFST));
-    (resultFST as FSTTerminal).setCodeLanguage(baseN.getCodeLanguage());
-    (resultFST as FSTTerminal).setMergeStrategy(baseN.getMergeStrategy());
+    // 2. impose both structures
+    const baseFST = parser.parse(baseN.getContent());
+    const featureFST = parser.parse(featureN.getContent());
+    const resultFST = context.impose({ 'base': baseFST, 'feature': featureFST }, ['base', 'feature']);
+
+
+    (newNode as FSTTerminal).setContent(generator.generate(resultFST));
+    (newNode as FSTTerminal).setCodeLanguage(baseN.getCodeLanguage());
+    (newNode as FSTTerminal).setMergeStrategy(baseN.getMergeStrategy());
+    (newNode as FSTTerminal).setFeatureName(featureN.getFeatureName());
+
   },
   id: 'fileCompose',
   package: 'smithery-core'

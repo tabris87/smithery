@@ -70,11 +70,11 @@ export class DirectoryParser implements IParser {
         if (options?.parserFactory && options.parserFactory.getParser(node.getCodeLanguage())) {
           node.setMergeStrategy('fileCompose');
         } else {
-          console.warn(`No plugin for ${fileName.substring(suffixIndex).replace('.', '').trim()} found, set strategy to 'fileOverride'.`);
-          node.setMergeStrategy('fileOverride');
+          console.warn(`No plugin for ${fileName.substring(suffixIndex).replace('.', '').trim()} found, set strategy to 'override'.`);
+          node.setMergeStrategy('override');
         }
       } else {
-        node.setMergeStrategy('fileOverride');
+        node.setMergeStrategy('override');
       }
 
       return node;

@@ -36,6 +36,7 @@ describe('FSTNode capabilities testing', () => {
             }))
         });
     });
+
     describe('FSTTerminal checks', () => {
         it('Test instantiation', () => {
             const t = new FSTTerminal('test', 'test_terminal');
@@ -82,6 +83,7 @@ describe('FSTNode capabilities testing', () => {
             }))
         });
     });
+
     describe('Tree of FSTNodes', () => {
         let root: FSTNonTerminal;
         beforeEach('Setup tree', () => {
@@ -170,6 +172,16 @@ describe('FSTNode capabilities testing', () => {
         it('Test deepClone', () => {
             const copy = root.deepClone();
             expect(copy).to.be.not.equal(root);
+        });
+
+        it('Check tree path', () => {
+            expect(root.getChildren().length).to.be.equal(3);
+            const c3 = root.getChildAt(2);
+            expect(c3 instanceof FSTNonTerminal).to.be.true;
+            expect((c3 as FSTNonTerminal).getChildren().length).to.be.equal(2);
+            const c3_2 = (c3 as FSTNonTerminal).getChildAt(1);
+            expect(c3_2 instanceof FSTTerminal).to.be.true;
+            expect(c3_2?.getTreePath()).to.be.equal('root<&>child3<&>child3_2');
         });
     });
 });
