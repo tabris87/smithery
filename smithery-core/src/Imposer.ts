@@ -4,7 +4,6 @@ import { RuleSet } from './RuleSet';
 import { FSTNode } from './utils/FSTNode';
 import { FSTTerminal } from './utils/FSTTerminal';
 import { FSTNonTerminal } from './utils/FSTNonTerminal';
-import { Rule } from './Rule';
 
 export class Imposer {
 	private parserFactory: ParserFactory;

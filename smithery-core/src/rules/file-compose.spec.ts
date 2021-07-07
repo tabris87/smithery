@@ -1,12 +1,10 @@
 import { expect, assert } from 'chai';
-import { parse } from 'picomatch';
 import * as sinon from 'sinon';
 import { FileType } from '../enums';
 import { GeneratorFactory } from '../Generator';
 import { Imposer } from '../Imposer';
 import { IGenerator, IParser } from '../Interfaces';
 import { ParserFactory } from '../Parser';
-import { Rule } from '../Rule';
 import { RuleSet } from '../RuleSet';
 import { FSTNode } from '../utils/FSTNode';
 import { FSTNonTerminal } from '../utils/FSTNonTerminal';
@@ -80,8 +78,8 @@ describe('Check if the rule for file imposing works correctly', () => {
         const file_feature = new FSTTerminal(FileType.File, 'temp', 'content');
         file_base.setCodeLanguage('test');
         file_feature.setCodeLanguage('test');
-        file_base.setMergeStrategy('fileCompose');
-        file_feature.setMergeStrategy('fileCompose');
+        file_base.setMergeStrategy('file_compose');
+        file_feature.setMergeStrategy('file_compose');
         file_base.setFeatureName('base');
         file_feature.setFeatureName('feature');
 
@@ -103,7 +101,7 @@ describe('Check if the rule for file imposing works correctly', () => {
         expect(child instanceof FSTTerminal).to.be.true;
         expect((child as FSTTerminal).getCodeLanguage()).to.be.equal('test');
         expect((child as FSTTerminal).getFeatureName()).to.be.equal('feature');
-        expect((child as FSTTerminal).getMergeStrategy()).to.be.equal('fileCompose');
+        expect((child as FSTTerminal).getMergeStrategy()).to.be.equal('file_compose');
         expect((child as FSTTerminal).getContent()).to.be.equal('display -> "Burning World!"');
         expect((child as FSTTerminal).getType()).to.be.equal(FileType.File);
         expect((child as FSTTerminal).getTreePath()).to.be.equal('feature<&>temp');
@@ -112,8 +110,8 @@ describe('Check if the rule for file imposing works correctly', () => {
     it('Check if only nodes composed which have a specific language definition', () => {
         const file_base = new FSTTerminal(FileType.File, 'temp', 'content');
         const file_feature = new FSTTerminal(FileType.File, 'temp', 'content');
-        file_base.setMergeStrategy('fileCompose');
-        file_feature.setMergeStrategy('fileCompose');
+        file_base.setMergeStrategy('file_compose');
+        file_feature.setMergeStrategy('file_compose');
         file_base.setFeatureName('base');
         file_feature.setFeatureName('feature');
 
@@ -134,8 +132,8 @@ describe('Check if the rule for file imposing works correctly', () => {
         const file_feature = new FSTTerminal(FileType.File, 'temp', 'content');
         file_base.setCodeLanguage('test');
         file_feature.setCodeLanguage('not_test');
-        file_base.setMergeStrategy('fileCompose');
-        file_feature.setMergeStrategy('fileCompose');
+        file_base.setMergeStrategy('file_compose');
+        file_feature.setMergeStrategy('file_compose');
         file_base.setFeatureName('base');
         file_feature.setFeatureName('feature');
 
@@ -156,8 +154,8 @@ describe('Check if the rule for file imposing works correctly', () => {
         const file_feature = new FSTTerminal(FileType.File, 'temp', 'content');
         file_base.setCodeLanguage('test');
         file_feature.setCodeLanguage('test');
-        file_base.setMergeStrategy('fileCompose');
-        file_feature.setMergeStrategy('fileCompose');
+        file_base.setMergeStrategy('file_compose');
+        file_feature.setMergeStrategy('file_compose');
         file_base.setFeatureName('base');
         file_feature.setFeatureName('feature');
         //Setting the imposer to the 'blank' default setup
@@ -180,8 +178,8 @@ describe('Check if the rule for file imposing works correctly', () => {
         const file_feature = new FSTTerminal(FileType.File, 'temp', 'content');
         file_base.setCodeLanguage('test');
         file_feature.setCodeLanguage('test');
-        file_base.setMergeStrategy('fileCompose');
-        file_feature.setMergeStrategy('fileCompose');
+        file_base.setMergeStrategy('file_compose');
+        file_feature.setMergeStrategy('file_compose');
         file_base.setFeatureName('base');
         file_feature.setFeatureName('feature');
 
@@ -205,8 +203,8 @@ describe('Check if the rule for file imposing works correctly', () => {
         const file_feature = new FSTTerminal(FileType.File, 'temp');
         file_base.setCodeLanguage('test');
         file_feature.setCodeLanguage('test');
-        file_base.setMergeStrategy('fileCompose');
-        file_feature.setMergeStrategy('fileCompose');
+        file_base.setMergeStrategy('file_compose');
+        file_feature.setMergeStrategy('file_compose');
         file_base.setFeatureName('base');
         file_feature.setFeatureName('feature');
 

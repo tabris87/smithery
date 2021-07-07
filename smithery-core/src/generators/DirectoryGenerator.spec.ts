@@ -1,7 +1,7 @@
 //setting up the testenvironment
 import { expect } from 'chai';
 import 'mocha';
-import { stub } from 'sinon';
+import { assert, stub } from 'sinon';
 
 //import stuff to test
 import { DirectoryGenerator } from './DirectoryGenerator';
@@ -21,8 +21,6 @@ describe('Check the generating ability of the DirectoryGenerator', () => {
   let mkdirSyncStub: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let writeFileSyncStub: any;
-
-  fs.mkdirSync
 
   beforeEach(() => {
     mkdirSyncStub = stub(fs, 'mkdirSync');
@@ -83,6 +81,6 @@ describe('Check the generating ability of the DirectoryGenerator', () => {
     expect(res).equal('Done');
     expect(mkdirSyncStub.calledOnce).to.be.not.true;
 
-    expect(writeFileSyncStub.calledOnce).to.be.true;
+    assert.calledTwice(writeFileSyncStub);
   });
 });

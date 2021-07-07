@@ -50,6 +50,6 @@ export const rule: IRule = {
     (newNode as FSTTerminal).setFeatureName(featureN.getFeatureName());
 
   },
-  id: 'fileCompose',
+  id: 'file_compose',
   package: 'smithery-core'
 };

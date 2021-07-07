@@ -1,2 +1,2 @@
-export { rule as fileImpose } from './file-impose';
-export { rule as override } from './file-override';
+export { rule as fileImpose } from './file-compose';
+export { rule as override } from './override';

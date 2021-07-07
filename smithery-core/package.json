@@ -14,6 +14,7 @@
     "test-debug": "npx mocha --inspect-brk -r ts-node/register \"src/**/*.spec.ts\"",
     "test-debug-single": "npx mocha --inspect-brk -r ts-node/register",
     "coverage": "npx nyc npm run test",
+    "doc": "npx typedoc",
     "lint": "npx eslint . --ext .ts",
     "lint-report": "npx eslint . --ext .ts -f node_modules/eslint-detailed-reporter/lib/detailed.js -o reports/lintingReport.html | exit 0",
     "format": "npx prettier --write \"src/**/*.ts\"",
@@ -48,6 +49,7 @@
     "sinon": "^9.2.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.0.0",
+    "typedoc": "^0.21.2",
     "typescript": "^4.0.3"
   }
 }

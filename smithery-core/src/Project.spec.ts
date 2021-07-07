@@ -1,10 +1,6 @@
 import { expect, assert } from 'chai';
 import 'mocha';
-import { stub } from 'sinon';
 import * as mock from 'mock-fs';
-
-import * as fs from 'fs';
-
 import { Project } from './Project';
 
 describe('Testing the Project class', () => {
@@ -342,5 +338,5 @@ describe('Testing the Project class', () => {
       mock.restore();
     });
   });
-  
+
 });

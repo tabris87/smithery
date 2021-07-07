@@ -1,7 +1,5 @@
 import { Project } from '../Project';
-import { expect, assert } from 'chai';
-
-import * as sinon from 'sinon';
+import { expect } from 'chai';
 
 import * as fs from 'fs';
 import * as path from 'path';

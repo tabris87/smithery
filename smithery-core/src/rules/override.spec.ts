@@ -6,7 +6,7 @@ import { Rule } from '../Rule';
 import { RuleSet } from '../RuleSet';
 import { FSTNonTerminal } from '../utils/FSTNonTerminal';
 import { FSTTerminal } from '../utils/FSTTerminal';
-import { rule as overrideRule } from './file-override';
+import { rule as overrideRule } from './override';
 
 const emptyImposer = new Imposer(new ParserFactory(), new GeneratorFactory(), new RuleSet());
 

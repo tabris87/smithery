@@ -1,6 +1,6 @@
 {
   "name": "smithery-cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "The cli interface for the smithery tooling",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "chalk": "^4.1.0",
     "inquirer": "^7.3.3",
     "md5": "^2.3.0",
-    "smithery": "^0.5.2"
+    "smithery": "file:../smithery-core/smithery-0.6.0.tgz"
   },
   "devDependencies": {
     "@types/chai": "^4.2.13",
