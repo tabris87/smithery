@@ -1,6 +1,6 @@
 {
   "name": "smithery",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "The \"house\" of SPL blacksmiths, to provide tooling for Software Product Line Engenieering.",
   "author": "Adrian Marten",
   "license": "Apache-2.0",
