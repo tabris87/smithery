@@ -10,10 +10,10 @@ export class Imposer {
 	private generatorFactory: GeneratorFactory;
 	private ruleSet: RuleSet;
 
-	constructor(parser: ParserFactory, generator: GeneratorFactory, rules: RuleSet) {
-		this.parserFactory = parser;
-		this.generatorFactory = generator;
-		this.ruleSet = rules;
+	constructor(parserFactory: ParserFactory, generatorFactory: GeneratorFactory, ruleSet: RuleSet) {
+		this.parserFactory = parserFactory;
+		this.generatorFactory = generatorFactory;
+		this.ruleSet = ruleSet;
 	}
 
 	public impose(features: { [key: string]: FSTNode }, featureOrder: string[]): FSTNode {
@@ -62,27 +62,27 @@ export class Imposer {
 				const nonterminalB: FSTNonTerminal = nodeB as FSTNonTerminal;
 				const nonterminalComp: FSTNonTerminal = compNode as FSTNonTerminal;
 
-				for (const childB of nonterminalB.getChildren()) {
-					const childA = nonterminalA.getCompatibleChild(childB);
+				for (const childA of nonterminalA.getChildren()) {
+					const childB = nonterminalB.getCompatibleChild(childA);
 					// for each child of B get the first compatible child of A
 					// (CompatibleChild means a Child which root equals B's
 					// root)
-					if (typeof childA === 'undefined') {
-						// no compatible child, FST-node only in B
-						nonterminalComp.addChild(childB.deepClone());
+					if (typeof childB === 'undefined') {
+						// no compatible child, FST-node only in A
+						nonterminalComp.addChild(childA.deepClone());
 					} else {
 						nonterminalComp.addChild(this.composeTrees(childA, childB, nonterminalComp));
 					}
 				}
-				for (const childA of nonterminalA.getChildren()) {
-					const childB = nonterminalB.getCompatibleChild(childA);
-					if (typeof childB === 'undefined') {
-						// no compatible child, FST-node only in A
-						this.handleChildWithoutCompatibleSiblings(childA, nonterminalComp);
+				for (const childB of nonterminalB.getChildren()) {
+					const childA = nonterminalA.getCompatibleChild(childB);
+					if (typeof childA === 'undefined') {
+						// no compatible child, FST-node only in B
+						this.handleChildWithoutCompatibleSiblings(childB, nonterminalComp);
 					}
 				}
 				return nonterminalComp;
-			} else if (nodeA instanceof FSTTerminal && nodeB instanceof FSTTerminal && compParent instanceof FSTNonTerminal) {
+			} else if (nodeA instanceof FSTTerminal && nodeB instanceof FSTTerminal) {
 				const terminalA: FSTTerminal = nodeA as FSTTerminal;
 				const terminalB: FSTTerminal = nodeB as FSTTerminal;
 				const terminalComp: FSTTerminal = compNode as FSTTerminal;

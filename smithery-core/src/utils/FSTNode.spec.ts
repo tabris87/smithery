@@ -79,7 +79,11 @@ describe('FSTNode capabilities testing', () => {
             expect(t.toString()).to.be.equal(JSON.stringify({
                 type: 'test',
                 name: 'test_terminal',
-                content: ''
+                content: '',
+                mergeStrat: '',
+                metadata: {
+                    code_lang: ''
+                }
             }))
         });
     });
@@ -134,12 +138,20 @@ describe('FSTNode capabilities testing', () => {
                     {
                         type: 'file',
                         name: 'child1',
-                        content: 'content1'
+                        content: 'content1',
+                        mergeStrat: '',
+                        metadata: {
+                            code_lang: ''
+                        }
                     },
                     {
                         type: 'file',
                         name: 'child2',
-                        content: 'content2'
+                        content: 'content2',
+                        mergeStrat: '',
+                        metadata: {
+                            code_lang: ''
+                        }
                     },
                     {
                         type: 'folder',
@@ -148,12 +160,20 @@ describe('FSTNode capabilities testing', () => {
                             {
                                 type: 'file',
                                 name: 'child3_1',
-                                content: ''
+                                content: '',
+                                mergeStrat: '',
+                                metadata: {
+                                    code_lang: ''
+                                }
                             },
                             {
                                 type: 'file',
                                 name: 'child3_2',
-                                content: ''
+                                content: '',
+                                mergeStrat: '',
+                                metadata: {
+                                    code_lang: ''
+                                }
                             }
                         ]
                     }

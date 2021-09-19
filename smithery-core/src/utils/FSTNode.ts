@@ -26,7 +26,7 @@ export abstract class FSTNode {
      * @returns the result if both nodes are equal or not
      */
     public compatibleWith(node: FSTNode): boolean {
-        return this._name.localeCompare(node.getName()) === 0 && this._type.localeCompare(node.getType()) === 0;
+        return (this._name + '').localeCompare(node.getName() + '') === 0 && this._type.localeCompare(node.getType()) === 0;
     }
     //#endregion
 

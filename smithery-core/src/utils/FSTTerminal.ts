@@ -19,7 +19,7 @@ export class FSTTerminal extends FSTNode {
      */
     constructor(type: string, name: string, content?: string) {
         super(type, name);
-        if (content && content.length > 0) {
+        if (content) {
             this._content = content;
         }
 
@@ -82,8 +82,10 @@ export class FSTTerminal extends FSTNode {
         return JSON.stringify({
             type: this.getType(),
             name: this.getName(),
-            content: this._content
-        })
+            content: this._content,
+            mergeStrat: this._strat,
+            metadata: this._meta
+        });
     }
 
     /**
