@@ -47,7 +47,7 @@
     "eslint": "^7.17.0",
     "eslint-detailed-reporter": "^0.8.0",
     "mocha": "^8.1.3",
-    "mochawesome": "^6.1.1",
+    "mochawesome": "^7.1.3",
     "typescript": "^4.0.3"
   },
   "keywords": [
