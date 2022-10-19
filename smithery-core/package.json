@@ -40,7 +40,7 @@
     "eslint": "^7.10.0",
     "eslint-detailed-reporter": "^0.8.0",
     "mocha": "^8.1.3",
-    "mochawesome": "^6.1.1",
+    "mochawesome": "^7.1.3",
     "mock-fs": "^4.13.0",
     "nyc": "^15.1.0",
     "sinon": "^9.2.0",
