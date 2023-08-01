@@ -5,21 +5,34 @@ import { FSTNonTerminal } from '../utils/FSTNonTerminal';
 import { FSTTerminal } from '../utils/FSTTerminal';
 
 export const rule: IRule = {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    apply: (base: FSTNode, feature: FSTNode, newNode: FSTNode, parent: FSTNonTerminal | undefined, _: Imposer): void => {
-        if (base instanceof FSTNonTerminal || feature instanceof FSTNonTerminal) {
-            throw new Error(`'base' Node or 'feature' Node not of type terminal, therefore not imposable by this rule.`);
-        }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  apply: (
+    base: FSTNode,
+    feature: FSTNode,
+    newNode: FSTNode,
+    parent: FSTNonTerminal | undefined,
+    _: Imposer
+  ): void => {
+    if (base instanceof FSTNonTerminal || feature instanceof FSTNonTerminal) {
+      throw new Error(
+        `'base' Node or 'feature' Node not of type terminal, therefore not imposable by this rule.`
+      );
+    }
 
-        if (!base.compatibleWith(feature)) {
-            throw new Error(`'base' Node and 'feature' Node not compatible`);
-        }
+    if (!base.compatibleWith(feature)) {
+      throw new Error(`'base' Node and 'feature' Node not compatible`);
+    }
 
-        (newNode as FSTTerminal).setContent((feature as FSTTerminal).getContent());
-        (newNode as FSTTerminal).setCodeLanguage((feature as FSTTerminal).getCodeLanguage());
-        (newNode as FSTTerminal).setMergeStrategy((feature as FSTTerminal).getMergeStrategy());
-        (newNode as FSTTerminal).setParent(parent);
-    },
-    id: 'override',
-    package: 'smithery-core'
+    (newNode as FSTTerminal).setContent((feature as FSTTerminal).getContent());
+    (newNode as FSTTerminal).setCodeLanguage(
+      (feature as FSTTerminal).getCodeLanguage()
+    );
+    (newNode as FSTTerminal).setMergeStrategy(
+      (feature as FSTTerminal).getMergeStrategy()
+    );
+    (newNode as FSTTerminal).setParent(parent);
+    (newNode as FSTTerminal).setRawContent(feature.getRawContent());
+  },
+  id: 'override',
+  package: 'smithery-core',
 };
